@@ -1,1 +1,7 @@
 project_id = "eozdslszmuiamycpsepe"
+
+[functions.process-order]
+verify_jwt = false
+
+[functions.find-driver]
+verify_jwt = false

@@ -235,6 +235,23 @@ const CheckoutPage = () => {
         throw orderError;
       }
 
+      // Call process-order edge function to auto-process
+      try {
+        console.log('Calling process-order function for order:', orderData.id);
+        const { data: processResult, error: processError } = await supabase.functions.invoke('process-order', {
+          body: { orderId: orderData.id }
+        });
+        
+        if (processError) {
+          console.error('Error processing order:', processError);
+        } else {
+          console.log('Order processed:', processResult);
+        }
+      } catch (processErr) {
+        console.error('Error calling process-order:', processErr);
+        // Don't block the order success even if process fails
+      }
+
       // Success
       clearCart();
       setOrderSuccess(orderData.id);
