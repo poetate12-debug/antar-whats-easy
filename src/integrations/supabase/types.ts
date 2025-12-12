@@ -508,6 +508,7 @@ export type Database = {
           jam_buka: string | null
           nama: string
           no_wa: string
+          owner_id: string | null
           rating: number | null
           total_reviews: number | null
           wilayah_id: string
@@ -522,6 +523,7 @@ export type Database = {
           jam_buka?: string | null
           nama: string
           no_wa: string
+          owner_id?: string | null
           rating?: number | null
           total_reviews?: number | null
           wilayah_id: string
@@ -536,6 +538,7 @@ export type Database = {
           jam_buka?: string | null
           nama?: string
           no_wa?: string
+          owner_id?: string | null
           rating?: number | null
           total_reviews?: number | null
           wilayah_id?: string
