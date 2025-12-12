@@ -165,7 +165,7 @@ export default function DriverDashboard() {
                       key={assignment.id}
                       assignment={assignment}
                       onAccept={acceptOrder}
-                      onReject={rejectOrder}
+                      onReject={(id, orderId) => rejectOrder(id, orderId)}
                     />
                   ))}
                 </div>

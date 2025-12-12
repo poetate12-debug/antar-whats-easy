@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import { 
   LogOut, Users, Store, MapPin, Package, 
   CheckCircle, XCircle, Shield, Wallet, Truck, BarChart3
@@ -55,6 +56,12 @@ export default function AdminDashboard() {
   // For mitra approval with warung assignment
   const [approvingMitra, setApprovingMitra] = useState<PendingRegistration | null>(null);
   const [selectedWarungId, setSelectedWarungId] = useState<string>('');
+
+  // Real-time notifications for admin
+  useAdminNotifications(
+    () => fetchData(), // onNewOrder - refresh data
+    () => fetchData()  // onNewRegistration - refresh data
+  );
 
   useEffect(() => {
     fetchData();

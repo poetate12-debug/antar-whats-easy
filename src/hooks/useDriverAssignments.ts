@@ -105,20 +105,55 @@ export function useDriverAssignments() {
     }
   };
 
-  const rejectOrder = async (assignmentId: string, reason?: string) => {
-    const { error } = await supabase
-      .from('driver_assignments')
-      .update({
-        status: 'rejected',
-        rejection_reason: reason || 'Driver menolak pesanan',
-      })
-      .eq('id', assignmentId);
+  const rejectOrder = async (assignmentId: string, orderId: string, reason?: string) => {
+    try {
+      // First update assignment status locally
+      const { error: updateError } = await supabase
+        .from('driver_assignments')
+        .update({
+          status: 'rejected',
+          rejection_reason: reason || 'Driver menolak pesanan',
+        })
+        .eq('id', assignmentId);
 
-    if (error) {
-      toast({ title: 'Gagal menolak pesanan', variant: 'destructive' });
-    } else {
-      toast({ title: 'Pesanan ditolak' });
+      if (updateError) {
+        toast({ title: 'Gagal menolak pesanan', variant: 'destructive' });
+        return;
+      }
+
+      toast({ title: 'Pesanan ditolak, mencari driver lain...' });
+
+      // Call reassign-driver function to find new driver
+      const { data: reassignResult, error: reassignError } = await supabase.functions.invoke('reassign-driver', {
+        body: { 
+          orderId,
+          reason: reason || 'Driver menolak pesanan',
+          currentDriverId: user?.id
+        }
+      });
+
+      if (reassignError) {
+        console.error('Error reassigning driver:', reassignError);
+        toast({ 
+          title: 'Tidak ada driver tersedia',
+          description: 'Pesanan menunggu driver baru',
+        });
+      } else if (reassignResult?.driverId) {
+        toast({ 
+          title: 'Driver baru ditemukan',
+          description: 'Pesanan akan diantar driver lain',
+        });
+      } else {
+        toast({ 
+          title: 'Menunggu driver tersedia',
+          description: 'Sistem akan assign driver otomatis',
+        });
+      }
+
       fetchAssignments();
+    } catch (err) {
+      console.error('Error rejecting order:', err);
+      toast({ title: 'Gagal menolak pesanan', variant: 'destructive' });
     }
   };
 

@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.find-driver]
 verify_jwt = false
+
+[functions.reassign-driver]
+verify_jwt = false
