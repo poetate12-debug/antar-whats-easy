@@ -20,6 +20,7 @@ const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
 const OrderTrackingPage = lazy(() => import("./pages/OrderTrackingPage"));
 const OrderHistoryPage = lazy(() => import("./pages/OrderHistoryPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 
 // Lazy load - dashboard pages (heavy)
 const CustomerDashboard = lazy(() => import("./pages/dashboard/CustomerDashboard"));
@@ -59,6 +60,7 @@ const App = () => (
               <Route path="/order/:orderId" element={<OrderTrackingPage />} />
               <Route path="/orders" element={<OrderHistoryPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               
               {/* Dashboard paths - lazy loaded */}
               <Route path="/dashboard/pelanggan" element={<CustomerDashboard />} />

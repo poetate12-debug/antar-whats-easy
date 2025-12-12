@@ -220,7 +220,10 @@ export default function ProfilePage() {
         {/* Quick Links */}
         <Card className="mb-4">
           <CardContent className="p-2">
-            <button className="w-full flex items-center gap-3 p-3 hover:bg-muted rounded-lg transition-colors">
+            <button 
+              className="w-full flex items-center gap-3 p-3 hover:bg-muted rounded-lg transition-colors"
+              onClick={() => navigate('/settings')}
+            >
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bell className="w-5 h-5 text-primary" />
               </div>
@@ -229,7 +232,10 @@ export default function ProfilePage() {
                 <p className="text-sm text-muted-foreground">Kelola pengaturan notifikasi</p>
               </div>
             </button>
-            <button className="w-full flex items-center gap-3 p-3 hover:bg-muted rounded-lg transition-colors">
+            <button 
+              className="w-full flex items-center gap-3 p-3 hover:bg-muted rounded-lg transition-colors"
+              onClick={() => navigate('/settings')}
+            >
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Shield className="w-5 h-5 text-primary" />
               </div>
@@ -238,7 +244,10 @@ export default function ProfilePage() {
                 <p className="text-sm text-muted-foreground">Ubah password</p>
               </div>
             </button>
-            <button className="w-full flex items-center gap-3 p-3 hover:bg-muted rounded-lg transition-colors">
+            <button 
+              className="w-full flex items-center gap-3 p-3 hover:bg-muted rounded-lg transition-colors"
+              onClick={() => navigate('/settings')}
+            >
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Settings className="w-5 h-5 text-primary" />
               </div>
