@@ -1,4 +1,4 @@
-import { Download, Smartphone } from "lucide-react";
+import { Smartphone, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePWA } from "@/hooks/usePWA";
 import { useToast } from "@/hooks/use-toast";
@@ -6,6 +6,9 @@ import { useToast } from "@/hooks/use-toast";
 const InstallPWAButton = () => {
   const { canInstall, isInstalled, promptInstall } = usePWA();
   const { toast } = useToast();
+
+  // Check if running in iframe (like Lovable preview)
+  const isInIframe = window.self !== window.top;
 
   const handleInstall = async () => {
     if (isInstalled) {
@@ -16,8 +19,17 @@ const InstallPWAButton = () => {
       return;
     }
 
+    // If in iframe, open in new tab for proper PWA install
+    if (isInIframe) {
+      window.open(window.location.href, '_blank');
+      toast({
+        title: "Buka di Tab Baru",
+        description: "Install aplikasi dari halaman yang baru dibuka",
+      });
+      return;
+    }
+
     if (!canInstall) {
-      // Provide helpful instructions based on browser/device
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
       const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
@@ -59,7 +71,11 @@ const InstallPWAButton = () => {
       onClick={handleInstall}
       title="Install Aplikasi"
     >
-      <Smartphone className="w-4 h-4 flex-shrink-0" />
+      {isInIframe ? (
+        <ExternalLink className="w-4 h-4 flex-shrink-0" />
+      ) : (
+        <Smartphone className="w-4 h-4 flex-shrink-0" />
+      )}
       <span>Install</span>
     </Button>
   );
