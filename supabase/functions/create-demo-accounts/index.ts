@@ -24,6 +24,12 @@ serve(async (req: Request) => {
     // Demo accounts to create
     const demoAccounts = [
       { 
+        nama: "Administrator", 
+        no_whatsapp: "admin", 
+        role: "admin" as const,
+        password: "123456"
+      },
+      { 
         nama: "Pelanggan Demo", 
         no_whatsapp: "081111111111", 
         role: "pelanggan" as const,
