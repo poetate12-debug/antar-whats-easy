@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { 
   LogOut, Users, Store, MapPin, Package, 
@@ -23,12 +25,19 @@ interface PendingRegistration {
   created_at: string;
 }
 
+interface Warung {
+  id: string;
+  nama: string;
+  owner_id: string | null;
+}
+
 export default function AdminDashboard() {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
   const [pendingRegs, setPendingRegs] = useState<PendingRegistration[]>([]);
+  const [warungs, setWarungs] = useState<Warung[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -38,6 +47,10 @@ export default function AdminDashboard() {
     totalDrivers: 0,
     pendingSetoran: 0,
   });
+  
+  // For mitra approval with warung assignment
+  const [approvingMitra, setApprovingMitra] = useState<PendingRegistration | null>(null);
+  const [selectedWarungId, setSelectedWarungId] = useState<string>('');
 
   useEffect(() => {
     fetchData();
@@ -54,6 +67,14 @@ export default function AdminDashboard() {
       .order('created_at', { ascending: false });
     
     setPendingRegs(regs || []);
+
+    // Fetch warungs without owner
+    const { data: warungData } = await supabase
+      .from('warungs')
+      .select('id, nama, owner_id')
+      .is('owner_id', null);
+    
+    setWarungs(warungData || []);
 
     // Fetch stats
     const [
@@ -84,7 +105,16 @@ export default function AdminDashboard() {
     setIsLoading(false);
   };
 
-  const handleApproveRegistration = async (reg: PendingRegistration) => {
+  const handleApproveClick = (reg: PendingRegistration) => {
+    if (reg.requested_role === 'mitra') {
+      setApprovingMitra(reg);
+      setSelectedWarungId('');
+    } else {
+      handleApproveRegistration(reg);
+    }
+  };
+
+  const handleApproveRegistration = async (reg: PendingRegistration, warungId?: string) => {
     try {
       // Create user in auth
       const email = `${reg.no_whatsapp}@gelis.app`;
@@ -120,6 +150,14 @@ export default function AdminDashboard() {
         }]);
       }
 
+      // Assign warung to mitra if selected
+      if (reg.requested_role === 'mitra' && warungId) {
+        await supabase
+          .from('warungs')
+          .update({ owner_id: authData.user.id })
+          .eq('id', warungId);
+      }
+
       // Update registration status
       await supabase
         .from('pending_registrations')
@@ -128,9 +166,10 @@ export default function AdminDashboard() {
 
       toast({
         title: 'Berhasil',
-        description: `Akun ${reg.nama} telah disetujui`,
+        description: `Akun ${reg.nama} telah disetujui${warungId ? ' dan dihubungkan ke warung' : ''}`,
       });
 
+      setApprovingMitra(null);
       fetchData();
     } catch (error) {
       console.error('Error approving registration:', error);
@@ -281,7 +320,7 @@ export default function AdminDashboard() {
                     <div className="flex gap-2">
                       <Button
                         size="sm"
-                        onClick={() => handleApproveRegistration(reg)}
+                        onClick={() => handleApproveClick(reg)}
                         className="flex-1 gap-1 h-8"
                       >
                         <CheckCircle className="w-3.5 h-3.5" />
@@ -322,6 +361,54 @@ export default function AdminDashboard() {
           Keluar
         </Button>
       </main>
+
+      {/* Mitra Approval Dialog */}
+      <Dialog open={!!approvingMitra} onOpenChange={(open) => !open && setApprovingMitra(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Setujui Mitra: {approvingMitra?.nama}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">
+                Pilih warung yang akan dihubungkan dengan mitra ini:
+              </p>
+              <Select value={selectedWarungId} onValueChange={setSelectedWarungId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih warung..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {warungs.map(w => (
+                    <SelectItem key={w.id} value={w.id}>
+                      {w.nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {warungs.length === 0 && (
+                <p className="text-xs text-orange-600 mt-2">
+                  Tidak ada warung tersedia. Semua warung sudah memiliki owner.
+                </p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setApprovingMitra(null)}
+              >
+                Batal
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={() => approvingMitra && handleApproveRegistration(approvingMitra, selectedWarungId)}
+              >
+                {selectedWarungId ? 'Setujui & Hubungkan' : 'Setujui Tanpa Warung'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
