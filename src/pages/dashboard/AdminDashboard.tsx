@@ -21,6 +21,7 @@ import AdminMitraPanel from '@/components/admin/AdminMitraPanel';
 import AdminDriverPanel from '@/components/admin/AdminDriverPanel';
 import AdminReportPanel from '@/components/admin/AdminReportPanel';
 import AdminSettingsPanel from '@/components/admin/AdminSettingsPanel';
+import AdminUserManager from '@/components/admin/AdminUserManager';
 
 interface PendingRegistration {
   id: string;
@@ -325,7 +326,7 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="registrations" className="mb-4">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-auto gap-1">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9 h-auto gap-1">
             <TabsTrigger value="registrations" className="text-xs gap-1 py-2">
               <Users className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Daftar</span>
@@ -334,6 +335,10 @@ export default function AdminDashboard() {
                   {pendingRegs.length}
                 </span>
               )}
+            </TabsTrigger>
+            <TabsTrigger value="users" className="text-xs gap-1 py-2">
+              <Users className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Users</span>
             </TabsTrigger>
             <TabsTrigger value="orders" className="text-xs gap-1 py-2">
               <Package className="w-3.5 h-3.5" />
@@ -401,6 +406,10 @@ export default function AdminDashboard() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="users" className="mt-4">
+            <AdminUserManager />
           </TabsContent>
 
           <TabsContent value="orders" className="mt-4">
