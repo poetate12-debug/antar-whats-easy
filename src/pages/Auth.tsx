@@ -42,19 +42,26 @@ export default function Auth() {
   // Fetch admin WhatsApp number from settings
   useEffect(() => {
     const fetchAdminWa = async () => {
-      const { data } = await supabase
-        .from('app_settings')
-        .select('value')
-        .eq('key', 'admin_whatsapp')
-        .maybeSingle();
-      
-      if (data?.value) {
-        // Remove non-digits and ensure starts with country code
-        let number = data.value.replace(/\D/g, '');
-        if (number.startsWith('0')) {
-          number = '62' + number.slice(1);
+      try {
+        const { data, error } = await supabase
+          .from('app_settings')
+          .select('value')
+          .eq('key', 'admin_whatsapp')
+          .maybeSingle();
+        
+        console.log('Admin WA fetch:', { data, error });
+        
+        if (data?.value) {
+          // Remove non-digits and ensure starts with country code
+          let number = data.value.replace(/\D/g, '');
+          if (number.startsWith('0')) {
+            number = '62' + number.slice(1);
+          }
+          console.log('Setting admin WA:', number);
+          setAdminWaNumber(number);
         }
-        setAdminWaNumber(number);
+      } catch (err) {
+        console.error('Error fetching admin WA:', err);
       }
     };
     fetchAdminWa();
