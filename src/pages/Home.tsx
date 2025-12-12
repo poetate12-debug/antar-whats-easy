@@ -74,16 +74,17 @@ const Home = () => {
 
           {/* Wilayah Pills */}
           <div className="mb-8">
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="flex flex-wrap justify-center gap-3">
               <button
                 onClick={() => setSelectedWilayah(null)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`px-5 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
                   selectedWilayah === null
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-primary text-primary-foreground shadow-lg"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
-                Semua Wilayah
+                <MapPin className="w-4 h-4" />
+                Terdekat
               </button>
               {activeWilayah.map((wilayah) => {
                 const warungCount = getWarungByWilayahId(wilayah.id).length;
@@ -91,15 +92,17 @@ const Home = () => {
                   <button
                     key={wilayah.id}
                     onClick={() => setSelectedWilayah(wilayah.id)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+                    className={`px-5 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
                       selectedWilayah === wilayah.id
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-primary-foreground shadow-lg"
                         : "bg-muted text-muted-foreground hover:bg-muted/80"
                     }`}
                   >
-                    <MapPin className="w-3 h-3" />
+                    <MapPin className="w-4 h-4" />
                     {wilayah.nama}
-                    <span className="text-xs opacity-70">({warungCount})</span>
+                    <span className="bg-background/20 px-2 py-0.5 rounded-full text-xs">
+                      {warungCount}
+                    </span>
                   </button>
                 );
               })}
@@ -111,14 +114,14 @@ const Home = () => {
             <h2 className="text-2xl font-bold text-foreground mb-4">
               {selectedWilayah
                 ? `Warung di ${getWilayahName(selectedWilayah)}`
-                : "Semua Warung"}
+                : "Warung Terdekat"}
               <span className="text-muted-foreground font-normal text-lg ml-2">
                 ({filteredWarungs.length} warung)
               </span>
             </h2>
 
             {filteredWarungs.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredWarungs.map((warung, index) => {
                   const wilayah = wilayahData.find((w) => w.id === warung.wilayahId);
                   return (
