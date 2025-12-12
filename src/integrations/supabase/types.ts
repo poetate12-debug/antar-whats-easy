@@ -14,6 +14,272 @@ export type Database = {
   }
   public: {
     Tables: {
+      driver_assignments: {
+        Row: {
+          accepted_at: string | null
+          assigned_at: string
+          created_at: string
+          delivered_at: string | null
+          driver_id: string
+          id: string
+          order_id: string
+          picked_up_at: string | null
+          rejection_reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          assigned_at?: string
+          created_at?: string
+          delivered_at?: string | null
+          driver_id: string
+          id?: string
+          order_id: string
+          picked_up_at?: string | null
+          rejection_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          assigned_at?: string
+          created_at?: string
+          delivered_at?: string | null
+          driver_id?: string
+          id?: string
+          order_id?: string
+          picked_up_at?: string | null
+          rejection_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_assignments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_earnings: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          driver_id: string
+          id: string
+          order_id: string | null
+          type: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          driver_id: string
+          id?: string
+          order_id?: string | null
+          type?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          driver_id?: string
+          id?: string
+          order_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_earnings_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_ratings: {
+        Row: {
+          comment: string | null
+          created_at: string
+          customer_name: string
+          driver_id: string
+          id: string
+          order_id: string
+          rating: number
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          customer_name: string
+          driver_id: string
+          id?: string
+          order_id: string
+          rating: number
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          customer_name?: string
+          driver_id?: string
+          id?: string
+          order_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_ratings_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_setoran: {
+        Row: {
+          amount: number
+          commission_rate: number
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          driver_id: string
+          id: string
+          notes: string | null
+          paid_at: string | null
+          period_end: string
+          period_start: string
+          status: string
+          total_earnings: number
+          total_orders: number
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          commission_rate?: number
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          driver_id: string
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          period_end: string
+          period_start: string
+          status?: string
+          total_earnings?: number
+          total_orders?: number
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          commission_rate?: number
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          driver_id?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          period_end?: string
+          period_start?: string
+          status?: string
+          total_earnings?: number
+          total_orders?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      driver_stats: {
+        Row: {
+          acceptance_rate: number
+          average_rating: number
+          cancelled_orders: number
+          completed_orders: number
+          created_at: string
+          driver_id: string
+          id: string
+          rank_position: number | null
+          total_earnings: number
+          total_orders: number
+          total_ratings: number
+          updated_at: string
+        }
+        Insert: {
+          acceptance_rate?: number
+          average_rating?: number
+          cancelled_orders?: number
+          completed_orders?: number
+          created_at?: string
+          driver_id: string
+          id?: string
+          rank_position?: number | null
+          total_earnings?: number
+          total_orders?: number
+          total_ratings?: number
+          updated_at?: string
+        }
+        Update: {
+          acceptance_rate?: number
+          average_rating?: number
+          cancelled_orders?: number
+          completed_orders?: number
+          created_at?: string
+          driver_id?: string
+          id?: string
+          rank_position?: number | null
+          total_earnings?: number
+          total_orders?: number
+          total_ratings?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      driver_status: {
+        Row: {
+          created_at: string
+          current_location: string | null
+          driver_id: string
+          id: string
+          is_online: boolean
+          last_online_at: string | null
+          updated_at: string
+          wilayah_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          current_location?: string | null
+          driver_id: string
+          id?: string
+          is_online?: boolean
+          last_online_at?: string | null
+          updated_at?: string
+          wilayah_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          current_location?: string | null
+          driver_id?: string
+          id?: string
+          is_online?: boolean
+          last_online_at?: string | null
+          updated_at?: string
+          wilayah_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_status_wilayah_id_fkey"
+            columns: ["wilayah_id"]
+            isOneToOne: false
+            referencedRelation: "wilayahs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       menus: {
         Row: {
           created_at: string
@@ -65,6 +331,7 @@ export type Database = {
           customer_address: string
           customer_name: string
           customer_phone: string
+          driver_id: string | null
           id: string
           items: Json
           ongkir: number
@@ -80,6 +347,7 @@ export type Database = {
           customer_address: string
           customer_name: string
           customer_phone: string
+          driver_id?: string | null
           id?: string
           items: Json
           ongkir: number
@@ -95,6 +363,7 @@ export type Database = {
           customer_address?: string
           customer_name?: string
           customer_phone?: string
+          driver_id?: string | null
           id?: string
           items?: Json
           ongkir?: number
