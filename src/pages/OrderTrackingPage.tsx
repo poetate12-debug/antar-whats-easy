@@ -310,14 +310,18 @@ export default function OrderTrackingPage() {
         <div className="bg-card rounded-xl border border-border p-4 mb-4">
           <h3 className="font-semibold text-sm mb-3">Detail Pesanan</h3>
           <div className="space-y-2">
-            {order.items.map((item: any, idx: number) => (
-              <div key={idx} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">
-                  {item.quantity}x {item.nama}
-                </span>
-                <span>{formatCurrency(item.subtotal)}</span>
-              </div>
-            ))}
+            {order.items.map((item: any, idx: number) => {
+              const qty = item.quantity || item.jumlah || 1;
+              const itemTotal = item.subtotal || (item.harga * qty);
+              return (
+                <div key={idx} className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {qty}x {item.nama}
+                  </span>
+                  <span>{formatCurrency(itemTotal)}</span>
+                </div>
+              );
+            })}
           </div>
           <div className="border-t border-border mt-3 pt-3 space-y-1">
             <div className="flex justify-between text-sm text-muted-foreground">
