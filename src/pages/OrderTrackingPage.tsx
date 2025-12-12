@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import NavHeader from '@/components/NavHeader';
-import Footer from '@/components/Footer';
+import BottomNavigation from '@/components/BottomNavigation';
 import { Button } from '@/components/ui/button';
 import DriverRatingModal from '@/components/DriverRatingModal';
 import { format } from 'date-fns';
@@ -124,7 +124,7 @@ export default function OrderTrackingPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col pb-20">
         <NavHeader showBack backTo="/" />
         <main className="flex-grow flex items-center justify-center">
           <div className="animate-pulse text-center">
@@ -132,14 +132,14 @@ export default function OrderTrackingPage() {
             <p>Memuat pesanan...</p>
           </div>
         </main>
-        <Footer />
+        <BottomNavigation />
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col pb-20">
         <NavHeader showBack backTo="/" />
         <main className="flex-grow flex items-center justify-center">
           <div className="text-center">
@@ -149,7 +149,7 @@ export default function OrderTrackingPage() {
             <Button onClick={() => navigate('/')}>Kembali ke Beranda</Button>
           </div>
         </main>
-        <Footer />
+        <BottomNavigation />
       </div>
     );
   }
@@ -159,7 +159,7 @@ export default function OrderTrackingPage() {
   const isCompleted = order.status === 'selesai';
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background pb-20">
       <NavHeader showBack backTo="/" backLabel="Beranda" />
 
       <main className="flex-grow container mx-auto px-4 py-6 max-w-lg">
@@ -355,7 +355,7 @@ export default function OrderTrackingPage() {
         </Button>
       </main>
 
-      <Footer />
+      <BottomNavigation />
 
       {/* Driver Rating Modal */}
       {order.driver_id && (

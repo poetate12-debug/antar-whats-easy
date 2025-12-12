@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import WarungCard from "@/components/WarungCard";
 import NavHeader from "@/components/NavHeader";
-import Footer from "@/components/Footer";
+import BottomNavigation from "@/components/BottomNavigation";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import PopularMenuSlider from "@/components/PopularMenuSlider";
 import InstallPWAButton from "@/components/InstallPWAButton";
@@ -114,7 +114,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-16">
       <NavHeader cartCount={totalItems} />
 
       <main className="flex-grow">
@@ -239,8 +239,8 @@ const Home = () => {
         </div>
       </main>
 
-      <Footer />
       <FloatingWhatsApp />
+      <BottomNavigation />
     </div>
   );
 };

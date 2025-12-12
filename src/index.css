@@ -169,6 +169,15 @@
   .dark .glass {
     background: rgba(0, 0, 0, 0.6);
   }
+
+  /* Safe area for bottom navigation on mobile */
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pb-safe {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 @keyframes float {

@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import NavHeader from '@/components/NavHeader';
-import Footer from '@/components/Footer';
+import BottomNavigation from '@/components/BottomNavigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Package, Clock, CheckCircle, XCircle, Truck, ChefHat } from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, Truck, ChefHat } from 'lucide-react';
 
 interface Order {
   id: string;
@@ -132,19 +132,14 @@ export default function OrderHistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col pb-20">
       <NavHeader />
 
       <main className="flex-1 container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard/customer')}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <h1 className="text-xl font-bold">Riwayat Pesanan</h1>
-            <p className="text-sm text-muted-foreground">{orders.length} pesanan</p>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-xl font-bold">Riwayat Pesanan</h1>
+          <p className="text-sm text-muted-foreground">{orders.length} pesanan</p>
         </div>
 
         {/* Filter Pills */}
@@ -217,7 +212,7 @@ export default function OrderHistoryPage() {
         )}
       </main>
 
-      <Footer />
+      <BottomNavigation />
     </div>
   );
 }
