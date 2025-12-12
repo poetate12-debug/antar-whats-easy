@@ -51,11 +51,11 @@ const Home = () => {
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-8">
           {/* Hero Section */}
-          <div className="text-center mb-8 animate-fade-up">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <div className="text-center mb-6 animate-fade-up">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2 sm:mb-4">
               Pesan Makanan, <span className="text-primary">Antar Cepat!</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
+            <p className="text-sm sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
               Pilih wilayah Anda untuk melihat warung-warung makan terdekat
             </p>
             
@@ -76,18 +76,17 @@ const Home = () => {
           </div>
 
           {/* Wilayah Pills */}
-          <div className="mb-8">
-            <div className="flex flex-wrap justify-center gap-3">
+          <div className="mb-4 sm:mb-6">
+            <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
               <button
                 onClick={() => setSelectedWilayah(null)}
-                className={`px-5 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 ${
                   selectedWilayah === null
-                    ? "bg-primary text-primary-foreground shadow-lg"
+                    ? "bg-primary text-primary-foreground shadow-md"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
-                <MapPin className="w-4 h-4" />
-                Semua Wilayah
+                Semua
               </button>
               {activeWilayah.map((wilayah) => {
                 const warungCount = getWarungByWilayahId(wilayah.id).length;
@@ -95,15 +94,14 @@ const Home = () => {
                   <button
                     key={wilayah.id}
                     onClick={() => setSelectedWilayah(wilayah.id)}
-                    className={`px-5 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 ${
                       selectedWilayah === wilayah.id
-                        ? "bg-primary text-primary-foreground shadow-lg"
+                        ? "bg-primary text-primary-foreground shadow-md"
                         : "bg-muted text-muted-foreground hover:bg-muted/80"
                     }`}
                   >
-                    <MapPin className="w-4 h-4" />
                     {wilayah.nama}
-                    <span className="bg-background/20 px-2 py-0.5 rounded-full text-xs">
+                    <span className="bg-background/20 px-1.5 py-0.5 rounded-full text-[10px]">
                       {warungCount}
                     </span>
                   </button>
@@ -117,28 +115,27 @@ const Home = () => {
 
           {/* Warung List */}
           <div>
-            <h2 className="text-2xl font-bold text-foreground mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3">
               {selectedWilayah
                 ? `Warung di ${getWilayahName(selectedWilayah)}`
                 : "Semua Warung"}
-              <span className="text-muted-foreground font-normal text-lg ml-2">
-                ({filteredWarungs.length} warung)
+              <span className="text-muted-foreground font-normal text-sm ml-2">
+                ({filteredWarungs.length})
               </span>
             </h2>
 
             {filteredWarungs.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4">
                 {filteredWarungs.map((warung, index) => {
                   const wilayah = wilayahData.find((w) => w.id === warung.wilayahId);
                   return (
                     <div
                       key={warung.id}
                       className="animate-fade-up"
-                      style={{ animationDelay: `${index * 50}ms` }}
+                      style={{ animationDelay: `${index * 30}ms` }}
                     >
                       <WarungCard
                         warung={warung}
-                        wilayahNama={wilayah?.nama || ""}
                         ongkir={wilayah?.ongkir || 0}
                         onClick={() => navigate(`/warung/${warung.id}`)}
                       />
