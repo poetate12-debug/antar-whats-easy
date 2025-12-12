@@ -27,7 +27,7 @@ export default function CustomerDashboard() {
             </div>
             <div>
               <h1 className="text-2xl font-bold">Halo, {profile?.nama || 'Pelanggan'}!</h1>
-              <p className="opacity-90">Selamat datang di AntarRasa</p>
+              <p className="opacity-90">Selamat datang di GELIS DELIVERY</p>
             </div>
           </div>
         </div>

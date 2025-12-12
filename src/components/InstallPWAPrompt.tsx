@@ -48,7 +48,7 @@ export function InstallPWAPrompt() {
             <Smartphone className="w-6 h-6 text-primary" />
           </div>
           <div className="flex-1 pr-6">
-            <h3 className="font-semibold text-foreground">Instal AntarRasa</h3>
+            <h3 className="font-semibold text-foreground">Instal GELIS DELIVERY</h3>
             <p className="text-sm text-muted-foreground mt-1">
               Akses lebih cepat langsung dari home screen Anda
             </p>

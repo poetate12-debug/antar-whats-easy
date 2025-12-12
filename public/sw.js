@@ -1,4 +1,4 @@
-const CACHE_NAME = 'antarrasa-v1';
+const CACHE_NAME = 'gelis-delivery-v1';
 const OFFLINE_URL = '/offline.html';
 
 const STATIC_ASSETS = [
