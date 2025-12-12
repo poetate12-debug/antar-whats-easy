@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/lib/whatsapp";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import NavHeader from "@/components/NavHeader";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -10,11 +11,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Minus, Plus, CheckCircle, Loader2 } from "lucide-react";
+import { Minus, Plus, CheckCircle, Loader2, AlertTriangle, UserPlus } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+const FIRST_ORDER_LIMIT = 50000; // Limit 50rb untuk pelanggan baru
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
+  const { user, profile, isLoading: authLoading } = useAuth();
   const { cart, updateQuantity, clearCart, totalItems } = useCart();
+  
   const [customerInfo, setCustomerInfo] = useState({
     nama: "",
     no_hp: "",
@@ -23,6 +29,79 @@ const CheckoutPage = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
+  const [orderCount, setOrderCount] = useState<number | null>(null);
+  const [checkingOrders, setCheckingOrders] = useState(true);
+
+  // Pre-fill customer info from profile
+  useEffect(() => {
+    if (profile) {
+      setCustomerInfo(prev => ({
+        ...prev,
+        nama: profile.nama || prev.nama,
+        no_hp: profile.no_whatsapp || prev.no_hp,
+        alamat: profile.alamat || prev.alamat,
+      }));
+    }
+  }, [profile]);
+
+  // Check if user is logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      toast({
+        title: "Silakan daftar/login terlebih dahulu",
+        description: "Untuk melanjutkan checkout, Anda perlu memiliki akun",
+      });
+      navigate('/auth', { state: { from: '/checkout', returnToCheckout: true } });
+    }
+  }, [user, authLoading, navigate]);
+
+  // Check user's order count for first order limit
+  useEffect(() => {
+    const checkOrderCount = async () => {
+      if (!profile?.no_whatsapp) {
+        setCheckingOrders(false);
+        return;
+      }
+
+      const { count, error } = await supabase
+        .from('orders')
+        .select('*', { count: 'exact', head: true })
+        .eq('customer_phone', profile.no_whatsapp)
+        .in('status', ['selesai']);
+
+      if (!error) {
+        setOrderCount(count || 0);
+      }
+      setCheckingOrders(false);
+    };
+
+    if (profile) {
+      checkOrderCount();
+    }
+  }, [profile]);
+
+  // Determine if first order limit applies
+  const isNewCustomer = profile && !profile.is_verified && orderCount === 0;
+  const exceedsFirstOrderLimit = isNewCustomer && cart && cart.total > FIRST_ORDER_LIMIT;
+
+  if (authLoading || checkingOrders) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <NavHeader showBack backTo="/" cartCount={0} />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+            <p className="text-muted-foreground">Memuat...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect in useEffect
+  }
 
   if (orderSuccess) {
     return (
@@ -83,6 +162,16 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check first order limit
+    if (exceedsFirstOrderLimit) {
+      toast({
+        title: "Melebihi Limit Pesanan Pertama",
+        description: `Pesanan pertama dibatasi maksimal ${formatPrice(FIRST_ORDER_LIMIT)}. Kurangi item atau hubungi admin untuk verifikasi akun.`,
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (!customerInfo.nama.trim()) {
       toast({
@@ -176,6 +265,30 @@ const CheckoutPage = () => {
             Checkout
           </h1>
 
+          {/* First Order Limit Warning */}
+          {isNewCustomer && (
+            <Alert className="mb-4 border-yellow-500/50 bg-yellow-500/10">
+              <AlertTriangle className="h-4 w-4 text-yellow-600" />
+              <AlertTitle className="text-yellow-700">Pelanggan Baru</AlertTitle>
+              <AlertDescription className="text-yellow-600">
+                Pesanan pertama dibatasi maksimal <strong>{formatPrice(FIRST_ORDER_LIMIT)}</strong>. 
+                Setelah pesanan pertama selesai atau akun diverifikasi admin, limit akan dihapus.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Limit Exceeded Error */}
+          {exceedsFirstOrderLimit && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Melebihi Limit</AlertTitle>
+              <AlertDescription>
+                Total pesanan ({formatPrice(cart.total)}) melebihi limit pesanan pertama ({formatPrice(FIRST_ORDER_LIMIT)}). 
+                Kurangi item atau hubungi admin untuk verifikasi akun Anda.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Order Summary */}
           <div className="bg-card rounded-xl border border-border p-4 mb-4">
             <h2 className="font-semibold text-foreground mb-3">
@@ -236,9 +349,11 @@ const CheckoutPage = () => {
                 <span>Ongkir</span>
                 <span>{formatPrice(cart.ongkir)}</span>
               </div>
-              <div className="flex justify-between font-bold text-foreground pt-2 border-t border-border">
+              <div className={`flex justify-between font-bold pt-2 border-t border-border ${exceedsFirstOrderLimit ? 'text-destructive' : 'text-foreground'}`}>
                 <span>Total</span>
-                <span className="text-primary">{formatPrice(cart.total)}</span>
+                <span className={exceedsFirstOrderLimit ? 'text-destructive' : 'text-primary'}>
+                  {formatPrice(cart.total)}
+                </span>
               </div>
             </div>
           </div>
@@ -312,7 +427,7 @@ const CheckoutPage = () => {
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || exceedsFirstOrderLimit}
               className="w-full mt-6"
               size="lg"
             >
@@ -321,6 +436,8 @@ const CheckoutPage = () => {
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Memproses...
                 </>
+              ) : exceedsFirstOrderLimit ? (
+                'Melebihi Limit Pesanan'
               ) : (
                 `Pesan Sekarang • ${formatPrice(cart.total)}`
               )}

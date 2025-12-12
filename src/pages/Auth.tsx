@@ -1,22 +1,24 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Phone, Lock, User, MapPin, Loader2, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Phone, Lock, User, MapPin, Loader2, MessageCircle, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { wilayahData } from '@/data/wilayah';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 type AuthMode = 'login' | 'register';
 type RoleType = 'pelanggan' | 'driver' | 'mitra';
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const location = useLocation();
+  const { signIn, user } = useAuth();
   const { toast } = useToast();
   
   const [mode, setMode] = useState<AuthMode>('login');
@@ -31,6 +33,17 @@ export default function Auth() {
   const [selectedRole, setSelectedRole] = useState<RoleType>('pelanggan');
   const [alamat, setAlamat] = useState('');
   const [selectedWilayah, setSelectedWilayah] = useState('');
+
+  // Check if coming from checkout
+  const fromCheckout = location.state?.returnToCheckout;
+  const redirectTo = location.state?.from || '/';
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate(redirectTo, { replace: true });
+    }
+  }, [user, navigate, redirectTo]);
 
   const validateWhatsapp = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '');
@@ -64,9 +77,9 @@ export default function Auth() {
 
     toast({
       title: 'Login Berhasil',
-      description: 'Selamat datang kembali!',
+      description: fromCheckout ? 'Melanjutkan ke checkout...' : 'Selamat datang kembali!',
     });
-    navigate('/');
+    navigate(redirectTo, { replace: true });
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -214,6 +227,16 @@ export default function Auth() {
               {mode === 'login' ? 'Masuk ke akun Anda' : 'Daftar akun baru'}
             </p>
           </div>
+
+          {/* Checkout Redirect Notice */}
+          {fromCheckout && (
+            <Alert className="mb-6 border-primary/50 bg-primary/10">
+              <ShoppingBag className="h-4 w-4 text-primary" />
+              <AlertDescription className="text-primary">
+                Silakan login atau daftar untuk melanjutkan checkout pesanan Anda.
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* Login Form */}
           {mode === 'login' && (
