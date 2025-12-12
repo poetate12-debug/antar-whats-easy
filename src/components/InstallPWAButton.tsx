@@ -20,16 +20,22 @@ const InstallPWAButton = () => {
       // Provide helpful instructions based on browser/device
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
       const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       
-      if (isIOS || isSafari) {
+      if (isStandalone) {
+        toast({
+          title: "Sudah Terinstal",
+          description: "Untuk menghapus, tekan lama ikon aplikasi di home screen lalu pilih 'Hapus'",
+        });
+      } else if (isIOS || isSafari) {
         toast({
           title: "Cara Install di Safari",
           description: "Tap tombol Share (kotak dengan panah) lalu pilih 'Add to Home Screen'",
         });
       } else {
         toast({
-          title: "Tips Install",
-          description: "Buka di browser Chrome atau Safari untuk menginstal aplikasi",
+          title: "Cara Install",
+          description: "Buka menu browser (⋮) lalu pilih 'Install app' atau 'Add to Home Screen'",
         });
       }
       return;
