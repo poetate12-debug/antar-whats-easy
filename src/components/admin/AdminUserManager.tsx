@@ -134,56 +134,21 @@ export default function AdminUserManager() {
       const cleanPhone = formData.noWhatsapp.replace(/\D/g, '');
       const email = `${cleanPhone}@gelis.app`;
 
-      // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email,
-        password: formData.password,
-        email_confirm: true,
+      // Call edge function to create user (requires service role)
+      const { data, error } = await supabase.functions.invoke('create-user', {
+        body: {
+          email,
+          password: formData.password,
+          nama: formData.nama.trim(),
+          noWhatsapp: cleanPhone,
+          role: formData.role,
+          wilayahId: formData.role === 'driver' ? formData.wilayahId : null,
+          warungId: formData.role === 'mitra' ? formData.warungId : null,
+        },
       });
 
-      if (authError) {
-        if (authError.message.includes('already registered')) {
-          throw new Error('Nomor WhatsApp sudah terdaftar');
-        }
-        throw authError;
-      }
-
-      // Create profile
-      await supabase.from('profiles').insert({
-        user_id: authData.user.id,
-        nama: formData.nama.trim(),
-        no_whatsapp: cleanPhone,
-        wilayah_id: formData.role === 'driver' ? formData.wilayahId : null,
-        is_verified: true,
-        is_active: true,
-      });
-
-      // Create role
-      await supabase.from('user_roles').insert({
-        user_id: authData.user.id,
-        role: formData.role,
-      });
-
-      // Create driver stats if driver
-      if (formData.role === 'driver') {
-        await supabase.from('driver_stats').insert({
-          driver_id: authData.user.id,
-        });
-        
-        await supabase.from('driver_status').insert({
-          driver_id: authData.user.id,
-          wilayah_id: formData.wilayahId,
-          is_online: false,
-        });
-      }
-
-      // Assign warung to mitra if selected
-      if (formData.role === 'mitra' && formData.warungId) {
-        await supabase
-          .from('warungs')
-          .update({ owner_id: authData.user.id })
-          .eq('id', formData.warungId);
-      }
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || 'Failed to create user');
 
       toast({
         title: 'Berhasil',
