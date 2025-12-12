@@ -9,12 +9,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useToast } from '@/hooks/use-toast';
 import { 
   LogOut, Users, Store, MapPin, Package, 
-  CheckCircle, XCircle, Clock, Shield, Wallet, Truck
+  CheckCircle, XCircle, Shield, Wallet, Truck, BarChart3
 } from 'lucide-react';
 import NavHeader from '@/components/NavHeader';
 import Footer from '@/components/Footer';
 import AdminSetoranManager from '@/components/admin/AdminSetoranManager';
 import AdminOrderManager from '@/components/admin/AdminOrderManager';
+import AdminWilayahPanel from '@/components/admin/AdminWilayahPanel';
+import AdminMitraPanel from '@/components/admin/AdminMitraPanel';
+import AdminDriverPanel from '@/components/admin/AdminDriverPanel';
+import AdminReportPanel from '@/components/admin/AdminReportPanel';
 
 interface PendingRegistration {
   id: string;
@@ -275,23 +279,39 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="registrations" className="mb-4">
-          <TabsList className="grid w-full grid-cols-3 h-10">
-            <TabsTrigger value="registrations" className="text-xs gap-1">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 h-auto gap-1">
+            <TabsTrigger value="registrations" className="text-xs gap-1 py-2">
               <Users className="w-3.5 h-3.5" />
-              Daftar
+              <span className="hidden sm:inline">Daftar</span>
               {pendingRegs.length > 0 && (
                 <span className="ml-1 w-4 h-4 bg-primary text-primary-foreground rounded-full text-[10px] flex items-center justify-center">
                   {pendingRegs.length}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="orders" className="text-xs gap-1">
+            <TabsTrigger value="orders" className="text-xs gap-1 py-2">
               <Package className="w-3.5 h-3.5" />
-              Pesanan
+              <span className="hidden sm:inline">Pesanan</span>
             </TabsTrigger>
-            <TabsTrigger value="setoran" className="text-xs gap-1">
+            <TabsTrigger value="wilayah" className="text-xs gap-1 py-2">
+              <MapPin className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Wilayah</span>
+            </TabsTrigger>
+            <TabsTrigger value="mitra" className="text-xs gap-1 py-2">
+              <Store className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Mitra</span>
+            </TabsTrigger>
+            <TabsTrigger value="driver" className="text-xs gap-1 py-2">
+              <Truck className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Driver</span>
+            </TabsTrigger>
+            <TabsTrigger value="setoran" className="text-xs gap-1 py-2">
               <Wallet className="w-3.5 h-3.5" />
-              Setoran
+              <span className="hidden sm:inline">Setoran</span>
+            </TabsTrigger>
+            <TabsTrigger value="laporan" className="text-xs gap-1 py-2">
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Laporan</span>
             </TabsTrigger>
           </TabsList>
 
@@ -318,20 +338,11 @@ export default function AdminDashboard() {
                       </span>
                     </div>
                     <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleApproveClick(reg)}
-                        className="flex-1 gap-1 h-8"
-                      >
+                      <Button size="sm" onClick={() => handleApproveClick(reg)} className="flex-1 gap-1 h-8">
                         <CheckCircle className="w-3.5 h-3.5" />
                         Setujui
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleRejectRegistration(reg)}
-                        className="flex-1 gap-1 h-8"
-                      >
+                      <Button size="sm" variant="outline" onClick={() => handleRejectRegistration(reg)} className="flex-1 gap-1 h-8">
                         <XCircle className="w-3.5 h-3.5" />
                         Tolak
                       </Button>
@@ -346,8 +357,24 @@ export default function AdminDashboard() {
             <AdminOrderManager />
           </TabsContent>
 
+          <TabsContent value="wilayah" className="mt-4">
+            <AdminWilayahPanel />
+          </TabsContent>
+
+          <TabsContent value="mitra" className="mt-4">
+            <AdminMitraPanel />
+          </TabsContent>
+
+          <TabsContent value="driver" className="mt-4">
+            <AdminDriverPanel />
+          </TabsContent>
+
           <TabsContent value="setoran" className="mt-4">
             <AdminSetoranManager />
+          </TabsContent>
+
+          <TabsContent value="laporan" className="mt-4">
+            <AdminReportPanel />
           </TabsContent>
         </Tabs>
 
