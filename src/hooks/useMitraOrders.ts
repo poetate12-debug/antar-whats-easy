@@ -51,8 +51,8 @@ export function useMitraOrders(warungId: string | undefined) {
       today.setHours(0, 0, 0, 0);
       
       setStats({
-        pending: data.filter(o => o.status === 'pending').length,
-        diproses: data.filter(o => o.status === 'diproses').length,
+        pending: data.filter(o => ['pending', 'diproses_warung'].includes(o.status)).length,
+        diproses: data.filter(o => ['diproses', 'menunggu_driver', 'diambil_driver'].includes(o.status)).length,
         selesai: data.filter(o => o.status === 'selesai').length,
         today: data.filter(o => new Date(o.created_at) >= today).length,
       });
@@ -94,6 +94,49 @@ export function useMitraOrders(warungId: string | undefined) {
   }, [warungId]);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    // If warung confirms and ready to deliver, call find-driver
+    if (newStatus === 'siap_antar') {
+      try {
+        // First update to menunggu_driver
+        await supabase
+          .from('orders')
+          .update({ status: 'menunggu_driver' })
+          .eq('id', orderId);
+
+        toast({ title: 'Mencari driver...' });
+
+        // Call find-driver function
+        const { data: driverResult, error: driverError } = await supabase.functions.invoke('find-driver', {
+          body: { orderId }
+        });
+
+        if (driverError) {
+          console.error('Error finding driver:', driverError);
+          toast({ 
+            title: 'Driver tidak ditemukan', 
+            description: 'Menunggu driver tersedia',
+          });
+        } else if (driverResult?.driverId) {
+          toast({ 
+            title: 'Driver ditemukan!', 
+            description: 'Pesanan akan segera diambil',
+          });
+        } else {
+          toast({ 
+            title: 'Menunggu driver tersedia',
+            description: 'Sistem akan otomatis assign driver',
+          });
+        }
+
+        fetchOrders();
+        return { error: null };
+      } catch (err) {
+        console.error('Error updating status:', err);
+        toast({ title: 'Gagal update status', variant: 'destructive' });
+        return { error: err };
+      }
+    }
+
     const { error } = await supabase
       .from('orders')
       .update({ status: newStatus })
@@ -102,14 +145,19 @@ export function useMitraOrders(warungId: string | undefined) {
     if (error) {
       toast({ title: 'Gagal update status', variant: 'destructive' });
     } else {
-      toast({ title: `Status diubah ke ${newStatus}` });
+      const statusLabels: Record<string, string> = {
+        dibatalkan: 'Pesanan ditolak',
+        diproses: 'Pesanan diproses',
+        menunggu_driver: 'Menunggu driver',
+      };
+      toast({ title: statusLabels[newStatus] || `Status: ${newStatus}` });
       fetchOrders();
     }
     return { error };
   };
 
-  const pendingOrders = orders.filter(o => o.status === 'pending');
-  const activeOrders = orders.filter(o => ['diproses', 'menunggu_driver'].includes(o.status));
+  const pendingOrders = orders.filter(o => ['pending', 'diproses_warung'].includes(o.status));
+  const activeOrders = orders.filter(o => ['diproses', 'menunggu_driver', 'diambil_driver'].includes(o.status));
 
   return { 
     orders, 

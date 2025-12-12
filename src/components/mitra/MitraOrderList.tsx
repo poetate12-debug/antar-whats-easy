@@ -45,8 +45,10 @@ export default function MitraOrderList({
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { icon: any; color: string; label: string }> = {
       pending: { icon: Clock, color: 'bg-yellow-100 text-yellow-700', label: 'Baru' },
+      diproses_warung: { icon: ChefHat, color: 'bg-blue-100 text-blue-700', label: 'Diproses' },
       diproses: { icon: ChefHat, color: 'bg-blue-100 text-blue-700', label: 'Diproses' },
-      menunggu_driver: { icon: Truck, color: 'bg-purple-100 text-purple-700', label: 'Siap Antar' },
+      menunggu_driver: { icon: Truck, color: 'bg-purple-100 text-purple-700', label: 'Cari Driver' },
+      diambil_driver: { icon: Truck, color: 'bg-indigo-100 text-indigo-700', label: 'Driver Ditugaskan' },
       dalam_perjalanan: { icon: Truck, color: 'bg-indigo-100 text-indigo-700', label: 'Diantar' },
       selesai: { icon: CheckCircle, color: 'bg-green-100 text-green-700', label: 'Selesai' },
     };
@@ -153,7 +155,7 @@ export default function MitraOrderList({
             </div>
 
             {/* Actions */}
-            {order.status === 'pending' && (
+            {(order.status === 'pending' || order.status === 'diproses_warung') && (
               <div className="flex gap-2">
                 <Button
                   size="sm"
@@ -166,9 +168,9 @@ export default function MitraOrderList({
                 <Button
                   size="sm"
                   className="flex-1"
-                  onClick={() => onUpdateStatus(order.id, 'diproses')}
+                  onClick={() => onUpdateStatus(order.id, 'siap_antar')}
                 >
-                  Terima & Proses
+                  Terima & Siap Antar
                 </Button>
               </div>
             )}
@@ -177,7 +179,7 @@ export default function MitraOrderList({
               <Button
                 size="sm"
                 className="w-full"
-                onClick={() => onUpdateStatus(order.id, 'menunggu_driver')}
+                onClick={() => onUpdateStatus(order.id, 'siap_antar')}
               >
                 Siap Diantar
               </Button>

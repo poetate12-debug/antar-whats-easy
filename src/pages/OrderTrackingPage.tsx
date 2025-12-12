@@ -37,8 +37,9 @@ interface Order {
 
 const statusSteps = [
   { key: 'pending', label: 'Menunggu Konfirmasi', icon: Clock },
-  { key: 'diproses', label: 'Diproses Warung', icon: ChefHat },
-  { key: 'menunggu_driver', label: 'Menunggu Driver', icon: Truck },
+  { key: 'diproses_warung', label: 'Diproses Warung', icon: ChefHat },
+  { key: 'menunggu_driver', label: 'Mencari Driver', icon: Truck },
+  { key: 'diambil_driver', label: 'Driver Ditugaskan', icon: Truck },
   { key: 'dalam_perjalanan', label: 'Dalam Perjalanan', icon: Truck },
   { key: 'selesai', label: 'Selesai', icon: CheckCircle },
 ];
@@ -119,7 +120,12 @@ export default function OrderTrackingPage() {
   const getCurrentStepIndex = () => {
     if (!order) return 0;
     if (order.status === 'dibatalkan') return -1;
-    return statusSteps.findIndex(s => s.key === order.status);
+    // Map old status names to new ones
+    const statusMap: Record<string, string> = {
+      'diproses': 'diproses_warung',
+    };
+    const mappedStatus = statusMap[order.status] || order.status;
+    return statusSteps.findIndex(s => s.key === mappedStatus);
   };
 
   if (isLoading) {
