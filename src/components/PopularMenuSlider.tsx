@@ -85,68 +85,63 @@ const PopularMenuSlider = () => {
   };
 
   return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-4">
+    <div className="mb-6">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Flame className="w-6 h-6 text-orange-500" />
-          <h2 className="text-2xl font-bold text-foreground">Menu Populer</h2>
+          <Flame className="w-5 h-5 text-orange-500" />
+          <h2 className="text-lg sm:text-xl font-bold text-foreground">Menu Populer</h2>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full"
+            className="rounded-full h-8 w-8"
             onClick={() => scroll("left")}
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4" />
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full"
+            className="rounded-full h-8 w-8"
             onClick={() => scroll("right")}
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
       </div>
 
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4"
+        className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4"
         style={{ scrollSnapType: "x mandatory" }}
       >
         {popularMenus.map((menu) => (
           <div
             key={menu.id}
-            className="flex-shrink-0 w-64 bg-card rounded-2xl shadow-card overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer"
+            className="flex-shrink-0 w-28 sm:w-36 bg-card rounded-xl shadow-card overflow-hidden hover:shadow-lg transition-all cursor-pointer"
             style={{ scrollSnapAlign: "start" }}
           >
             {/* Image */}
-            <div className="h-32 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-              <span className="text-5xl">{menu.foto}</span>
+            <div className="h-16 sm:h-20 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+              <span className="text-2xl sm:text-3xl">{menu.foto}</span>
             </div>
 
             {/* Content */}
-            <div className="p-4">
-              <h3 className="font-bold text-foreground line-clamp-1 mb-1">
+            <div className="p-2">
+              <h3 className="font-semibold text-foreground line-clamp-1 text-xs sm:text-sm">
                 {menu.nama}
               </h3>
-              <p className="text-sm text-muted-foreground mb-2">{menu.warungNama}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1">{menu.warungNama}</p>
               
-              <div className="flex items-center justify-between">
-                <span className="text-primary font-bold">
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-primary font-bold text-xs sm:text-sm">
                   {formatPrice(menu.harga)}
                 </span>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="flex items-center gap-1 text-yellow-500">
-                    <Star className="w-4 h-4 fill-current" />
-                    {menu.rating}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {menu.terjual} terjual
-                  </span>
-                </div>
+                <span className="flex items-center gap-0.5 text-yellow-500 text-[10px] sm:text-xs">
+                  <Star className="w-3 h-3 fill-current" />
+                  {menu.rating}
+                </span>
               </div>
             </div>
           </div>

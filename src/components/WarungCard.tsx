@@ -13,9 +13,12 @@ interface WarungCardProps {
 
 const WarungCard = ({ warung, menuCount, wilayahNama, ongkir, onClick }: WarungCardProps) => {
   return (
-    <div className="bg-card rounded-2xl shadow-card overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1">
+    <div 
+      className="bg-card rounded-xl shadow-card overflow-hidden hover:shadow-lg transition-all cursor-pointer"
+      onClick={onClick}
+    >
       {/* Image */}
-      <div className="aspect-video bg-gradient-to-br from-secondary to-muted relative overflow-hidden">
+      <div className="aspect-[4/3] bg-gradient-to-br from-secondary to-muted relative overflow-hidden">
         {warung.foto ? (
           <img 
             src={warung.foto} 
@@ -24,83 +27,48 @@ const WarungCard = ({ warung, menuCount, wilayahNama, ongkir, onClick }: WarungC
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="text-5xl">🏪</span>
+            <span className="text-3xl">🏪</span>
           </div>
-        )}
-        {wilayahNama && (
-          <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded-full flex items-center gap-1">
-            <MapPin className="w-3 h-3" />
-            {wilayahNama}
-          </span>
         )}
         {/* Rating Badge */}
         {warung.rating && (
-          <span className="absolute top-3 right-3 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 font-semibold">
-            <Star className="w-3 h-3 fill-current" />
+          <span className="absolute top-1.5 right-1.5 bg-yellow-500 text-white text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-semibold">
+            <Star className="w-2.5 h-2.5 fill-current" />
             {warung.rating}
           </span>
         )}
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <h3 className="text-lg font-bold text-foreground mb-1 line-clamp-1">
+      <div className="p-2">
+        <h3 className="text-xs sm:text-sm font-bold text-foreground line-clamp-1">
           {warung.nama}
         </h3>
 
-        {warung.deskripsi && (
-          <p className="text-muted-foreground text-sm mb-2 line-clamp-1">
-            {warung.deskripsi}
-          </p>
-        )}
-
         {/* Menu Preview */}
         {warung.menuPreview && warung.menuPreview.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
-            {warung.menuPreview.slice(0, 3).map((menu, idx) => (
-              <span 
-                key={idx}
-                className="bg-secondary text-secondary-foreground text-xs px-2 py-0.5 rounded-full"
-              >
-                {menu}
-              </span>
-            ))}
-          </div>
+          <p className="text-[10px] text-muted-foreground line-clamp-1 mt-0.5">
+            {warung.menuPreview.slice(0, 2).join(", ")}
+          </p>
         )}
 
-        <div className="space-y-1 mb-3">
-          <p className="text-muted-foreground text-xs flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="line-clamp-1">{warung.alamat}</span>
-          </p>
-
-          {warung.jamBuka && (
-            <p className="text-muted-foreground text-xs flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5" />
-              {warung.jamBuka}
-            </p>
+        <div className="flex items-center justify-between mt-1 text-[10px]">
+          {warung.totalTerjual !== undefined && (
+            <span className="text-muted-foreground flex items-center gap-0.5">
+              <ShoppingBag className="w-2.5 h-2.5" />
+              {warung.totalTerjual >= 1000 
+                ? `${(warung.totalTerjual / 1000).toFixed(1)}k` 
+                : warung.totalTerjual}
+            </span>
           )}
 
-          <div className="flex items-center justify-between text-xs">
-            {warung.totalTerjual !== undefined && (
-              <p className="text-muted-foreground flex items-center gap-1.5">
-                <ShoppingBag className="w-3.5 h-3.5" />
-                {warung.totalTerjual.toLocaleString()} terjual
-              </p>
-            )}
-
-            {ongkir !== undefined && (
-              <p className="text-accent font-medium flex items-center gap-1">
-                <Truck className="w-3.5 h-3.5" />
-                {formatPrice(ongkir)}
-              </p>
-            )}
-          </div>
+          {ongkir !== undefined && (
+            <span className="text-accent font-medium flex items-center gap-0.5">
+              <Truck className="w-2.5 h-2.5" />
+              {formatPrice(ongkir)}
+            </span>
+          )}
         </div>
-
-        <Button onClick={onClick} className="w-full" size="sm">
-          Lihat Menu
-        </Button>
       </div>
     </div>
   );

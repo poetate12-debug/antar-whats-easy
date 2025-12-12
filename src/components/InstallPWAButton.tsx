@@ -39,12 +39,12 @@ const InstallPWAButton = () => {
   return (
     <Button
       variant="outline"
-      size="icon"
-      className="rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground h-12 w-12"
+      className="rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground h-10 px-4 text-sm gap-2"
       onClick={handleInstall}
       title="Install Aplikasi"
     >
-      <Download className="w-5 h-5" />
+      <Download className="w-4 h-4" />
+      <span className="hidden sm:inline">Install</span>
     </Button>
   );
 };
