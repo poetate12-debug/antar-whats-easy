@@ -22,7 +22,7 @@ export default function BottomNavigation() {
   const { user } = useAuth();
 
   // Don't show on dashboard pages (admin/mitra/driver have their own nav)
-  const hiddenPaths = ['/dashboard/admin', '/dashboard/mitra', '/dashboard/driver', '/auth', '/checkout'];
+  const hiddenPaths = ['/dashboard/admin', '/dashboard/mitra', '/dashboard/driver', '/auth', '/admin', '/checkout'];
   if (hiddenPaths.some(path => location.pathname.startsWith(path))) {
     return null;
   }
