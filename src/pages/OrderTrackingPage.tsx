@@ -4,11 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import NavHeader from '@/components/NavHeader';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import DriverRatingModal from '@/components/DriverRatingModal';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { 
   Package, Clock, ChefHat, Truck, CheckCircle, XCircle,
-  MapPin, Phone, Store, ArrowRight
+  MapPin, Phone, Store, ArrowRight, Star
 } from 'lucide-react';
 
 interface Order {
@@ -23,6 +24,7 @@ interface Order {
   status: string;
   catatan: string | null;
   created_at: string;
+  driver_id: string | null;
   warung?: {
     nama: string;
     alamat: string;
@@ -46,6 +48,20 @@ export default function OrderTrackingPage() {
   const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [hasRated, setHasRated] = useState(false);
+
+  // Check if user already rated this order
+  const checkExistingRating = async () => {
+    if (!orderId) return;
+    const { data } = await supabase
+      .from('driver_ratings')
+      .select('id')
+      .eq('order_id', orderId)
+      .maybeSingle();
+    
+    if (data) setHasRated(true);
+  };
 
   const fetchOrder = async () => {
     if (!orderId) return;
@@ -68,6 +84,7 @@ export default function OrderTrackingPage() {
 
   useEffect(() => {
     fetchOrder();
+    checkExistingRating();
 
     // Subscribe to realtime updates
     const channel = supabase
@@ -173,6 +190,24 @@ export default function OrderTrackingPage() {
               <CheckCircle className="w-16 h-16 mx-auto mb-3 text-green-500" />
               <h2 className="text-xl font-bold text-green-700">Pesanan Selesai</h2>
               <p className="text-sm text-green-600 mt-1">Terima kasih telah memesan!</p>
+              
+              {/* Rating Button */}
+              {order.driver_id && !hasRated && (
+                <Button
+                  onClick={() => setShowRatingModal(true)}
+                  className="mt-4 gap-2"
+                  variant="outline"
+                >
+                  <Star className="w-4 h-4" />
+                  Beri Rating Driver
+                </Button>
+              )}
+              {hasRated && (
+                <p className="text-sm text-muted-foreground mt-3 flex items-center justify-center gap-1">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  Anda sudah memberi rating
+                </p>
+              )}
             </>
           ) : (
             <>
@@ -317,6 +352,18 @@ export default function OrderTrackingPage() {
       </main>
 
       <Footer />
+
+      {/* Driver Rating Modal */}
+      {order.driver_id && (
+        <DriverRatingModal
+          open={showRatingModal}
+          onOpenChange={setShowRatingModal}
+          orderId={order.id}
+          driverId={order.driver_id}
+          customerName={order.customer_name}
+          onSuccess={() => setHasRated(true)}
+        />
+      )}
     </div>
   );
 }
