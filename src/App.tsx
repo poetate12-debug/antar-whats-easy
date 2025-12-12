@@ -12,6 +12,7 @@ import WilayahPage from "./pages/WilayahPage";
 import WarungPage from "./pages/WarungPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import CustomerDashboard from "./pages/dashboard/CustomerDashboard";
+import OrderHistoryPage from "./pages/OrderHistoryPage";
 import DriverDashboard from "./pages/dashboard/DriverDashboard";
 import MitraDashboard from "./pages/dashboard/MitraDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
@@ -35,6 +36,8 @@ const App = () => (
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/order/:orderId" element={<OrderTrackingPage />} />
             <Route path="/dashboard/pelanggan" element={<CustomerDashboard />} />
+            <Route path="/dashboard/customer" element={<CustomerDashboard />} />
+            <Route path="/orders" element={<OrderHistoryPage />} />
             <Route path="/dashboard/driver" element={<DriverDashboard />} />
             <Route path="/dashboard/mitra" element={<MitraDashboard />} />
             <Route path="/dashboard/admin" element={<AdminDashboard />} />
