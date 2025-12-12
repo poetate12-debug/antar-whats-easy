@@ -38,7 +38,7 @@ interface Warung {
 }
 
 export default function AdminDashboard() {
-  const { profile, signOut } = useAuth();
+  const { user, profile, role, isLoading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -58,6 +58,30 @@ export default function AdminDashboard() {
   const [approvingMitra, setApprovingMitra] = useState<PendingRegistration | null>(null);
   const [selectedWarungId, setSelectedWarungId] = useState<string>('');
 
+  // Auth protection - redirect if not logged in or not admin
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        toast({
+          title: 'Akses Ditolak',
+          description: 'Silakan login terlebih dahulu',
+          variant: 'destructive',
+        });
+        navigate('/auth');
+        return;
+      }
+      if (role !== 'admin') {
+        toast({
+          title: 'Akses Ditolak',
+          description: 'Anda tidak memiliki akses ke halaman ini',
+          variant: 'destructive',
+        });
+        navigate('/');
+        return;
+      }
+    }
+  }, [user, role, authLoading, navigate, toast]);
+
   // Real-time notifications for admin
   useAdminNotifications(
     () => fetchData(), // onNewOrder - refresh data
@@ -65,8 +89,10 @@ export default function AdminDashboard() {
   );
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user && role === 'admin') {
+      fetchData();
+    }
+  }, [user, role]);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -227,6 +253,18 @@ export default function AdminDashboard() {
     mitra: 'Mitra',
     admin: 'Admin',
   };
+
+  // Show loading while checking auth
+  if (authLoading || !user || role !== 'admin') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Memeriksa akses...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
