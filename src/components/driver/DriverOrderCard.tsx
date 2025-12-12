@@ -21,7 +21,7 @@ interface OrderCardProps {
     };
   };
   onAccept?: (id: string) => void;
-  onReject?: (id: string) => void;
+  onReject?: (id: string, orderId: string) => void;
   onPickup?: (id: string) => void;
   onDeliver?: (id: string, orderId: string) => void;
 }
@@ -127,7 +127,7 @@ export default function DriverOrderCard({
               variant="outline"
               size="sm"
               className="flex-1 gap-1"
-              onClick={() => onReject?.(assignment.id)}
+              onClick={() => onReject?.(assignment.id, order.id)}
             >
               <X className="w-4 h-4" />
               Tolak

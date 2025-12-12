@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ShoppingCart, ChevronLeft, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface NavHeaderProps {
   showBack?: boolean;
@@ -57,6 +58,9 @@ const NavHeader = ({
 
           {/* Right side */}
           <div className="flex items-center gap-1 sm:gap-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {/* User/Login Button */}
             <Link 
               to={getDashboardLink()} 
