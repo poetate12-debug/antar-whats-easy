@@ -22,6 +22,20 @@ serve(async (req: Request) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Helper to send push notifications
+    async function sendPushToRole(role: string, payload: { title: string; body: string; url: string }) {
+      try {
+        await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${supabaseServiceKey}` },
+          body: JSON.stringify({ ...payload, role })
+        });
+        console.log(`Push notification sent to ${role}`);
+      } catch (e) {
+        console.error('Error sending push:', e);
+      }
+    }
+
     const { orderId }: ProcessOrderRequest = await req.json();
     
     if (!orderId) {
@@ -71,6 +85,20 @@ serve(async (req: Request) => {
         throw updateError;
       }
 
+      // Send push notification to mitra
+      await sendPushToRole('mitra', {
+        title: 'Pesanan Baru!',
+        body: `Pesanan baru dari ${order.customer_name} - ${order.warung?.nama}`,
+        url: '/dashboard/mitra'
+      });
+
+      // Send push notification to admin
+      await sendPushToRole('admin', {
+        title: 'Pesanan Baru',
+        body: `${order.customer_name} memesan di ${order.warung?.nama}`,
+        url: '/dashboard/admin'
+      });
+
       return new Response(
         JSON.stringify({ 
           success: true, 
@@ -84,7 +112,14 @@ serve(async (req: Request) => {
       // No owner - skip warung confirmation, directly find driver
       console.log("Warung has no owner, finding available driver");
       
-      const driverResult = await findAndAssignDriver(supabase, order);
+      const driverResult = await findAndAssignDriver(supabase, order, sendPushToRole);
+
+      // Send push notification to admin
+      await sendPushToRole('admin', {
+        title: 'Pesanan Baru',
+        body: `${order.customer_name} memesan di ${order.warung?.nama}`,
+        url: '/dashboard/admin'
+      });
       
       return new Response(
         JSON.stringify({ 
@@ -106,7 +141,11 @@ serve(async (req: Request) => {
   }
 });
 
-async function findAndAssignDriver(supabase: any, order: any) {
+async function findAndAssignDriver(
+  supabase: any, 
+  order: any, 
+  sendPushToRole: (role: string, payload: { title: string; body: string; url: string }) => Promise<void>
+) {
   const wilayahId = order.wilayah_id;
   
   console.log(`Finding driver for wilayah: ${wilayahId}`);
@@ -153,7 +192,7 @@ async function findAndAssignDriver(supabase: any, order: any) {
 
     // Use first available driver from any wilayah
     console.log(`Using driver from different wilayah: ${allDrivers[0].driver_id}`);
-    return await assignDriverToOrder(supabase, order.id, allDrivers[0].driver_id);
+    return await assignDriverToOrder(supabase, order.id, allDrivers[0].driver_id, sendPushToRole);
   }
 
   // Get driver stats to rank them
@@ -188,7 +227,7 @@ async function findAndAssignDriver(supabase: any, order: any) {
 
     if (!existingAssignment || existingAssignment.length === 0) {
       console.log(`Assigning driver: ${driver.driver_id}`);
-      return await assignDriverToOrder(supabase, order.id, driver.driver_id);
+      return await assignDriverToOrder(supabase, order.id, driver.driver_id, sendPushToRole);
     }
   }
 
@@ -206,7 +245,12 @@ async function findAndAssignDriver(supabase: any, order: any) {
   };
 }
 
-async function assignDriverToOrder(supabase: any, orderId: string, driverId: string) {
+async function assignDriverToOrder(
+  supabase: any, 
+  orderId: string, 
+  driverId: string,
+  sendPushToRole: (role: string, payload: { title: string; body: string; url: string }) => Promise<void>
+) {
   // Create driver assignment
   const { error: assignError } = await supabase
     .from("driver_assignments")
@@ -234,6 +278,13 @@ async function assignDriverToOrder(supabase: any, orderId: string, driverId: str
     console.error("Error updating order:", updateError);
     throw updateError;
   }
+
+  // Send push notification to driver
+  await sendPushToRole('driver', {
+    title: 'Pesanan Baru!',
+    body: 'Ada pesanan baru untuk Anda',
+    url: '/dashboard/driver'
+  });
 
   return {
     success: true,

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import NavHeader from '@/components/NavHeader';
 import BottomNavigation from '@/components/BottomNavigation';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { 
   Bell, 
   MapPin, 
@@ -19,7 +19,8 @@ import {
   Moon,
   Volume2,
   MessageSquare,
-  Package
+  Package,
+  Smartphone
 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -43,6 +44,7 @@ export default function SettingsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { theme, toggleTheme } = useTheme();
+  const { isSupported: pushSupported, isSubscribed: pushSubscribed, isLoading: pushLoading, subscribe: subscribePush, unsubscribe: unsubscribePush } = usePushNotifications();
   const isDark = theme === 'dark';
 
   const [addresses, setAddresses] = useState<SavedAddress[]>([]);
@@ -169,6 +171,32 @@ export default function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Push Notifications */}
+            {pushSupported && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Smartphone className="w-5 h-5 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium">Push Notification</p>
+                    <p className="text-sm text-muted-foreground">
+                      {pushSubscribed ? 'Notifikasi aktif' : 'Aktifkan notifikasi browser'}
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={pushSubscribed}
+                  disabled={pushLoading}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      subscribePush();
+                    } else {
+                      unsubscribePush();
+                    }
+                  }}
+                />
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Package className="w-5 h-5 text-muted-foreground" />
