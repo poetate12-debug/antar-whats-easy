@@ -10,7 +10,11 @@ export const warungData: Warung[] = [
     jamBuka: "07:00 - 21:00",
     noWa: "6281234567890",
     deskripsi: "Warung makan keluarga dengan masakan rumahan yang lezat",
+    foto: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.8,
+    totalTerjual: 1250,
+    menuPreview: ["Nasi Goreng", "Ayam Bakar", "Es Teh"],
   },
   {
     id: "2",
@@ -20,7 +24,11 @@ export const warungData: Warung[] = [
     jamBuka: "06:00 - 22:00",
     noWa: "6281234567891",
     deskripsi: "Spesialis nasi goreng dan mie goreng",
+    foto: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.6,
+    totalTerjual: 890,
+    menuPreview: ["Nasi Goreng", "Mie Goreng", "Es Jeruk"],
   },
   {
     id: "3",
@@ -30,7 +38,11 @@ export const warungData: Warung[] = [
     jamBuka: "08:00 - 20:00",
     noWa: "6281234567892",
     deskripsi: "Masakan Sunda autentik dengan harga terjangkau",
+    foto: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.5,
+    totalTerjual: 650,
+    menuPreview: ["Nasi Liwet", "Sayur Asem", "Lalapan"],
   },
   
   // Terisi
@@ -42,7 +54,11 @@ export const warungData: Warung[] = [
     jamBuka: "06:00 - 21:00",
     noWa: "6281234567893",
     deskripsi: "Warung legendaris dengan soto ayam khas",
+    foto: "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.9,
+    totalTerjual: 2100,
+    menuPreview: ["Soto Ayam", "Nasi Uduk", "Es Teh"],
   },
   {
     id: "5",
@@ -52,7 +68,11 @@ export const warungData: Warung[] = [
     jamBuka: "07:00 - 20:00",
     noWa: "6281234567894",
     deskripsi: "Aneka lauk pauk dan sayuran segar",
+    foto: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.4,
+    totalTerjual: 430,
+    menuPreview: ["Nasi Rames", "Ayam Goreng", "Sayur"],
   },
   
   // Lelea
@@ -64,7 +84,11 @@ export const warungData: Warung[] = [
     jamBuka: "06:30 - 21:30",
     noWa: "6281234567895",
     deskripsi: "Ayam goreng crispy dan berbagai menu lezat",
+    foto: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.7,
+    totalTerjual: 980,
+    menuPreview: ["Ayam Crispy", "Nasi Goreng", "Es Jeruk"],
   },
   {
     id: "7",
@@ -74,7 +98,11 @@ export const warungData: Warung[] = [
     jamBuka: "07:00 - 20:00",
     noWa: "6281234567896",
     deskripsi: "Masakan Sunda tradisional dengan bumbu rempah",
+    foto: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.6,
+    totalTerjual: 560,
+    menuPreview: ["Nasi Timbel", "Ikan Bakar", "Sambal"],
   },
   
   // Losarang
@@ -86,7 +114,11 @@ export const warungData: Warung[] = [
     jamBuka: "10:00 - 22:00",
     noWa: "6281234567897",
     deskripsi: "Seafood segar langsung dari nelayan lokal",
+    foto: "https://images.unsplash.com/photo-1579027989536-b7b1f875659b?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.8,
+    totalTerjual: 1450,
+    menuPreview: ["Udang Bakar", "Cumi Goreng", "Ikan Laut"],
   },
   {
     id: "9",
@@ -96,7 +128,11 @@ export const warungData: Warung[] = [
     jamBuka: "06:00 - 20:00",
     noWa: "6281234567898",
     deskripsi: "Menu lengkap dengan harga bersahabat",
+    foto: "https://images.unsplash.com/photo-1567521464027-f127ff144326?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.3,
+    totalTerjual: 320,
+    menuPreview: ["Nasi Campur", "Sop Ayam", "Es Teh"],
   },
   
   // Kroya
@@ -108,7 +144,11 @@ export const warungData: Warung[] = [
     jamBuka: "06:00 - 21:00",
     noWa: "6281234567899",
     deskripsi: "Pecel lele dan ayam penyet juara!",
+    foto: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.9,
+    totalTerjual: 1890,
+    menuPreview: ["Pecel Lele", "Ayam Penyet", "Sambal"],
   },
   
   // Gabuswetan
@@ -120,7 +160,11 @@ export const warungData: Warung[] = [
     jamBuka: "07:00 - 21:00",
     noWa: "6281234567900",
     deskripsi: "Masakan Padang autentik dengan rendang empuk",
+    foto: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.7,
+    totalTerjual: 1120,
+    menuPreview: ["Rendang", "Gulai Ayam", "Dendeng"],
   },
   
   // Patrol
@@ -132,7 +176,11 @@ export const warungData: Warung[] = [
     jamBuka: "08:00 - 20:00",
     noWa: "6281234567901",
     deskripsi: "Bakso jumbo dengan kuah kaldu sapi asli",
+    foto: "https://images.unsplash.com/photo-1583032015879-e5022cb87c3b?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.8,
+    totalTerjual: 2340,
+    menuPreview: ["Bakso Jumbo", "Mie Ayam", "Pangsit"],
   },
   
   // Bongas
@@ -144,7 +192,11 @@ export const warungData: Warung[] = [
     jamBuka: "07:00 - 19:00",
     noWa: "6281234567902",
     deskripsi: "Mie ayam dan pangsit terenak di Bongas",
+    foto: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop",
     isActive: true,
+    rating: 4.6,
+    totalTerjual: 780,
+    menuPreview: ["Mie Ayam", "Pangsit", "Es Jeruk"],
   },
 ];
 

@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Phone, Lock, User, MapPin, Loader2 } from 'lucide-react';
+import { ArrowLeft, Phone, Lock, User, MapPin, Loader2, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { wilayahData } from '@/data/wilayah';
 
 type AuthMode = 'login' | 'register';
 type RoleType = 'pelanggan' | 'driver' | 'mitra';
@@ -19,6 +21,7 @@ export default function Auth() {
   
   const [mode, setMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(false);
+  const [loginRole, setLoginRole] = useState<RoleType>('pelanggan');
   
   // Form state
   const [nama, setNama] = useState('');
@@ -27,6 +30,7 @@ export default function Auth() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [selectedRole, setSelectedRole] = useState<RoleType>('pelanggan');
   const [alamat, setAlamat] = useState('');
+  const [selectedWilayah, setSelectedWilayah] = useState('');
 
   const validateWhatsapp = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '');
@@ -86,6 +90,15 @@ export default function Auth() {
       return;
     }
 
+    if (selectedRole === 'mitra' && !selectedWilayah) {
+      toast({
+        title: 'Error',
+        description: 'Pilih wilayah untuk warung Anda',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (password.length < 6) {
       toast({
         title: 'Error',
@@ -137,9 +150,10 @@ export default function Auth() {
         mitra: 'Mitra/Pemilik Warung',
       };
 
-      const message = `*Pendaftaran AntarRasa*%0A%0ANama: ${nama}%0ANo. WhatsApp: ${noWhatsapp}%0ARole: ${roleText[selectedRole]}%0AAlamat: ${alamat || '-'}%0A%0AMohon diverifikasi. Terima kasih.`;
+      const wilayahNama = wilayahData.find(w => w.id === selectedWilayah)?.nama || '-';
+      const message = `*Pendaftaran GELIS DELIVERY*%0A%0ANama: ${nama}%0ANo. WhatsApp: ${noWhatsapp}%0ARole: ${roleText[selectedRole]}${selectedRole === 'mitra' ? `%0AWilayah: ${wilayahNama}` : ''}%0AAlamat: ${alamat || '-'}%0A%0AMohon diverifikasi. Terima kasih.`;
       
-      // Admin WhatsApp number - you can change this
+      // Admin WhatsApp number
       const adminWa = '6281234567890';
       const waLink = `https://wa.me/${adminWa}?text=${message}`;
 
@@ -159,6 +173,7 @@ export default function Auth() {
       setPassword('');
       setConfirmPassword('');
       setAlamat('');
+      setSelectedWilayah('');
       setMode('login');
 
     } catch (error) {
@@ -170,6 +185,12 @@ export default function Auth() {
       });
       setIsLoading(false);
     }
+  };
+
+  const handleContactAdmin = () => {
+    const adminWa = '6281234567890';
+    const message = `Halo Admin GELIS DELIVERY,%0A%0ASaya ingin mendaftar sebagai Driver.%0A%0ANama: ${nama || '[isi nama Anda]'}%0ANo. WhatsApp: ${noWhatsapp || '[isi nomor Anda]'}%0A%0AMohon informasi lebih lanjut. Terima kasih.`;
+    window.open(`https://wa.me/${adminWa}?text=${message}`, '_blank');
   };
 
   return (
@@ -188,195 +209,268 @@ export default function Auth() {
         <div className="max-w-md mx-auto">
           {/* Logo */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-primary">🍽️ AntarRasa</h1>
+            <h1 className="text-3xl font-bold text-primary">🚀 GELIS DELIVERY</h1>
             <p className="text-muted-foreground mt-2">
               {mode === 'login' ? 'Masuk ke akun Anda' : 'Daftar akun baru'}
             </p>
           </div>
 
-          {/* Tab Switcher */}
-          <div className="flex bg-muted rounded-xl p-1 mb-6">
-            <button
-              onClick={() => setMode('login')}
-              className={`flex-1 py-3 rounded-lg font-medium transition-all ${
-                mode === 'login'
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground'
-              }`}
-            >
-              Masuk
-            </button>
-            <button
-              onClick={() => setMode('register')}
-              className={`flex-1 py-3 rounded-lg font-medium transition-all ${
-                mode === 'register'
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground'
-              }`}
-            >
-              Daftar
-            </button>
-          </div>
-
           {/* Login Form */}
           {mode === 'login' && (
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="login-wa">Nomor WhatsApp</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="login-wa"
-                    type="tel"
-                    placeholder="08123456789"
-                    value={noWhatsapp}
-                    onChange={(e) => setNoWhatsapp(e.target.value)}
-                    className="pl-11"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="login-password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="login-password"
-                    type="password"
-                    placeholder="Masukkan password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-11"
-                    required
-                  />
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Masuk
-              </Button>
-            </form>
-          )}
-
-          {/* Register Form */}
-          {mode === 'register' && (
-            <form onSubmit={handleRegister} className="space-y-4">
-              {/* Role Selection */}
-              <div className="space-y-2">
-                <Label>Daftar Sebagai</Label>
-                <div className="grid grid-cols-3 gap-2">
+            <div className="space-y-6">
+              {/* Role Selection for Login */}
+              <div className="space-y-3">
+                <Label className="text-center block text-lg font-semibold">Masuk Sebagai</Label>
+                <div className="grid grid-cols-3 gap-3">
                   {(['pelanggan', 'driver', 'mitra'] as RoleType[]).map((role) => (
                     <button
                       key={role}
                       type="button"
-                      onClick={() => setSelectedRole(role)}
-                      className={`p-3 rounded-xl border-2 transition-all text-center ${
-                        selectedRole === role
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border hover:border-primary/50'
+                      onClick={() => setLoginRole(role)}
+                      className={`p-4 rounded-xl border-2 transition-all text-center ${
+                        loginRole === role
+                          ? 'border-primary bg-primary/10 text-primary shadow-lg scale-105'
+                          : 'border-border hover:border-primary/50 bg-card'
                       }`}
                     >
-                      <div className="text-2xl mb-1">
+                      <div className="text-3xl mb-2">
                         {role === 'pelanggan' && '👤'}
                         {role === 'driver' && '🛵'}
                         {role === 'mitra' && '🏪'}
                       </div>
-                      <div className="text-xs font-medium capitalize">{role}</div>
+                      <div className="text-sm font-semibold capitalize">{role}</div>
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="reg-nama">Nama Lengkap</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="reg-nama"
-                    type="text"
-                    placeholder="Nama lengkap Anda"
-                    value={nama}
-                    onChange={(e) => setNama(e.target.value)}
-                    className="pl-11"
-                    required
-                  />
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="login-wa">Nomor WhatsApp</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Input
+                      id="login-wa"
+                      type="tel"
+                      placeholder="08123456789"
+                      value={noWhatsapp}
+                      onChange={(e) => setNoWhatsapp(e.target.value)}
+                      className="pl-11"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="login-password">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Input
+                      id="login-password"
+                      type="password"
+                      placeholder="Masukkan password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-11"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                  {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  Masuk
+                </Button>
+              </form>
+
+              {/* Register Button */}
+              <div className="pt-4 border-t border-border">
+                <p className="text-center text-muted-foreground mb-3">Belum punya akun?</p>
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  size="lg"
+                  onClick={() => setMode('register')}
+                >
+                  Daftar Sekarang
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Register Form */}
+          {mode === 'register' && (
+            <div className="space-y-6">
+              {/* Role Selection */}
+              <div className="space-y-3">
+                <Label className="text-center block text-lg font-semibold">Daftar Sebagai</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {(['pelanggan', 'driver', 'mitra'] as RoleType[]).map((role) => (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => setSelectedRole(role)}
+                      className={`p-4 rounded-xl border-2 transition-all text-center ${
+                        selectedRole === role
+                          ? 'border-primary bg-primary/10 text-primary shadow-lg scale-105'
+                          : 'border-border hover:border-primary/50 bg-card'
+                      }`}
+                    >
+                      <div className="text-3xl mb-2">
+                        {role === 'pelanggan' && '👤'}
+                        {role === 'driver' && '🛵'}
+                        {role === 'mitra' && '🏪'}
+                      </div>
+                      <div className="text-sm font-semibold capitalize">{role}</div>
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="reg-wa">Nomor WhatsApp</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="reg-wa"
-                    type="tel"
-                    placeholder="08123456789"
-                    value={noWhatsapp}
-                    onChange={(e) => setNoWhatsapp(e.target.value)}
-                    className="pl-11"
-                    required
-                  />
+              {/* Driver Contact Admin Button */}
+              {selectedRole === 'driver' && (
+                <div className="bg-accent/10 rounded-xl p-4 space-y-3">
+                  <p className="text-sm text-center text-muted-foreground">
+                    Untuk mendaftar sebagai Driver, silakan hubungi admin langsung via WhatsApp
+                  </p>
+                  <Button 
+                    type="button" 
+                    className="w-full bg-green-600 hover:bg-green-700" 
+                    size="lg"
+                    onClick={handleContactAdmin}
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Hubungi Admin
+                  </Button>
                 </div>
+              )}
+
+              {/* Registration Form for Pelanggan and Mitra */}
+              {selectedRole !== 'driver' && (
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-nama">Nama Lengkap</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="reg-nama"
+                        type="text"
+                        placeholder="Nama lengkap Anda"
+                        value={nama}
+                        onChange={(e) => setNama(e.target.value)}
+                        className="pl-11"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-wa">Nomor WhatsApp</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="reg-wa"
+                        type="tel"
+                        placeholder="08123456789"
+                        value={noWhatsapp}
+                        onChange={(e) => setNoWhatsapp(e.target.value)}
+                        className="pl-11"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Wilayah Selection for Mitra */}
+                  {selectedRole === 'mitra' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="reg-wilayah">Wilayah Warung</Label>
+                      <Select value={selectedWilayah} onValueChange={setSelectedWilayah}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih wilayah warung Anda" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {wilayahData.filter(w => w.isActive).map((wilayah) => (
+                            <SelectItem key={wilayah.id} value={wilayah.id}>
+                              {wilayah.nama}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-alamat">Alamat {selectedRole === 'mitra' ? 'Warung' : '(Opsional)'}</Label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="reg-alamat"
+                        type="text"
+                        placeholder="Alamat lengkap"
+                        value={alamat}
+                        onChange={(e) => setAlamat(e.target.value)}
+                        className="pl-11"
+                        required={selectedRole === 'mitra'}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-password">Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="reg-password"
+                        type="password"
+                        placeholder="Minimal 6 karakter"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="pl-11"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-confirm">Konfirmasi Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="reg-confirm"
+                        type="password"
+                        placeholder="Ulangi password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="pl-11"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                    {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    Daftar & Kirim ke Admin
+                  </Button>
+
+                  <p className="text-xs text-center text-muted-foreground">
+                    Setelah daftar, Anda akan diarahkan ke WhatsApp untuk mengirim pesan verifikasi ke admin.
+                  </p>
+                </form>
+              )}
+
+              {/* Back to Login */}
+              <div className="pt-4 border-t border-border">
+                <p className="text-center text-muted-foreground mb-3">Sudah punya akun?</p>
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  size="lg"
+                  onClick={() => setMode('login')}
+                >
+                  Masuk
+                </Button>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="reg-alamat">Alamat (Opsional)</Label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="reg-alamat"
-                    type="text"
-                    placeholder="Alamat lengkap"
-                    value={alamat}
-                    onChange={(e) => setAlamat(e.target.value)}
-                    className="pl-11"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="reg-password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="reg-password"
-                    type="password"
-                    placeholder="Minimal 6 karakter"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-11"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="reg-confirm">Konfirmasi Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="reg-confirm"
-                    type="password"
-                    placeholder="Ulangi password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-11"
-                    required
-                  />
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Daftar & Kirim ke Admin
-              </Button>
-
-              <p className="text-xs text-center text-muted-foreground">
-                Setelah daftar, Anda akan diarahkan ke WhatsApp untuk mengirim pesan verifikasi ke admin.
-              </p>
-            </form>
+            </div>
           )}
         </div>
       </main>

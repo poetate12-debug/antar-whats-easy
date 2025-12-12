@@ -36,7 +36,7 @@ const NavHeader = ({
               to="/"
               className="text-2xl font-bold text-primary flex items-center gap-2"
             >
-              🍽️ AntarRasa
+              🚀 GELIS DELIVERY
             </Link>
           </div>
 
