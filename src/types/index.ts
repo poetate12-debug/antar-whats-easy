@@ -19,6 +19,9 @@ export interface Warung {
   deskripsi?: string;
   isActive: boolean;
   menuCount?: number;
+  rating?: number;
+  totalTerjual?: number;
+  menuPreview?: string[];
 }
 
 export interface Menu {

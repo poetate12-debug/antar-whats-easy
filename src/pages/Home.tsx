@@ -2,15 +2,15 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { wilayahData } from "@/data/wilayah";
 import { warungData, getWarungByWilayahId } from "@/data/warung";
-import WilayahCard from "@/components/WilayahCard";
 import WarungCard from "@/components/WarungCard";
 import NavHeader from "@/components/NavHeader";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import PopularMenuSlider from "@/components/PopularMenuSlider";
+import InstallPWAButton from "@/components/InstallPWAButton";
 import { useCart } from "@/hooks/useCart";
 import { Search, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { formatPrice } from "@/lib/whatsapp";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const Home = () => {
       warungs = warungs.filter(
         (w) =>
           w.nama.toLowerCase().includes(query) ||
-          w.deskripsi.toLowerCase().includes(query)
+          (w.deskripsi && w.deskripsi.toLowerCase().includes(query))
       );
     }
     
@@ -59,16 +59,19 @@ const Home = () => {
               Pilih wilayah Anda untuk melihat warung-warung makan terdekat
             </p>
             
-            {/* Search Bar */}
-            <div className="max-w-md mx-auto relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Cari warung atau menu..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12 text-base rounded-full border-2 border-border focus:border-primary"
-              />
+            {/* Search Bar with PWA Install Button */}
+            <div className="max-w-md mx-auto flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Cari warung atau menu..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-12 text-base rounded-full border-2 border-border focus:border-primary"
+                />
+              </div>
+              <InstallPWAButton />
             </div>
           </div>
 
@@ -84,7 +87,7 @@ const Home = () => {
                 }`}
               >
                 <MapPin className="w-4 h-4" />
-                Terdekat
+                Semua Wilayah
               </button>
               {activeWilayah.map((wilayah) => {
                 const warungCount = getWarungByWilayahId(wilayah.id).length;
@@ -109,12 +112,15 @@ const Home = () => {
             </div>
           </div>
 
+          {/* Popular Menu Slider */}
+          <PopularMenuSlider />
+
           {/* Warung List */}
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-4">
               {selectedWilayah
                 ? `Warung di ${getWilayahName(selectedWilayah)}`
-                : "Warung Terdekat"}
+                : "Semua Warung"}
               <span className="text-muted-foreground font-normal text-lg ml-2">
                 ({filteredWarungs.length} warung)
               </span>
