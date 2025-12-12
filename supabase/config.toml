@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.reassign-driver]
 verify_jwt = false
+
+[functions.check-driver-timeout]
+verify_jwt = false
