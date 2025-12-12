@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { 
@@ -29,7 +28,7 @@ interface Order {
   };
 }
 
-export default function AdminOrderManager() {
+const AdminOrderManager = forwardRef<HTMLDivElement>((props, ref) => {
   const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -134,7 +133,7 @@ export default function AdminOrderManager() {
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
+      <div ref={ref} className="space-y-3">
         {[1, 2, 3].map(i => (
           <div key={i} className="h-32 bg-muted animate-pulse rounded-xl" />
         ))}
@@ -143,7 +142,7 @@ export default function AdminOrderManager() {
   }
 
   return (
-    <div>
+    <div ref={ref}>
       {/* Filters */}
       <div className="flex gap-2 overflow-x-auto pb-3 mb-4">
         {statusFilters.map(sf => (
@@ -263,4 +262,8 @@ export default function AdminOrderManager() {
       )}
     </div>
   );
-}
+});
+
+AdminOrderManager.displayName = 'AdminOrderManager';
+
+export default AdminOrderManager;
