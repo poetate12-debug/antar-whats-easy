@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,7 @@ interface DriverSetoran {
   };
 }
 
-const AdminSetoranManager = forwardRef<HTMLDivElement>((props, ref) => {
+export default function AdminSetoranManager() {
   const { toast } = useToast();
   const [setoranList, setSetoranList] = useState<DriverSetoran[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -85,7 +85,7 @@ const AdminSetoranManager = forwardRef<HTMLDivElement>((props, ref) => {
 
   if (isLoading) {
     return (
-      <div ref={ref} className="space-y-3">
+      <div className="space-y-3">
         {[1, 2, 3].map(i => (
           <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />
         ))}
@@ -97,7 +97,7 @@ const AdminSetoranManager = forwardRef<HTMLDivElement>((props, ref) => {
   const paidSetoran = setoranList.filter(s => s.status === 'paid');
 
   return (
-    <div ref={ref} className="space-y-4">
+    <div className="space-y-4">
       {/* Summary */}
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
@@ -184,8 +184,4 @@ const AdminSetoranManager = forwardRef<HTMLDivElement>((props, ref) => {
       )}
     </div>
   );
-});
-
-AdminSetoranManager.displayName = 'AdminSetoranManager';
-
-export default AdminSetoranManager;
+}
