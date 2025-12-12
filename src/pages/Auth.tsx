@@ -24,6 +24,7 @@ export default function Auth() {
   const [mode, setMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(false);
   const [loginRole, setLoginRole] = useState<RoleType>('pelanggan');
+  const [adminWaNumber, setAdminWaNumber] = useState('6281234567890');
   
   // Form state
   const [nama, setNama] = useState('');
@@ -37,6 +38,27 @@ export default function Auth() {
   // Check if coming from checkout
   const fromCheckout = location.state?.returnToCheckout;
   const redirectTo = location.state?.from || '/';
+
+  // Fetch admin WhatsApp number from settings
+  useEffect(() => {
+    const fetchAdminWa = async () => {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'admin_whatsapp')
+        .maybeSingle();
+      
+      if (data?.value) {
+        // Remove non-digits and ensure starts with country code
+        let number = data.value.replace(/\D/g, '');
+        if (number.startsWith('0')) {
+          number = '62' + number.slice(1);
+        }
+        setAdminWaNumber(number);
+      }
+    };
+    fetchAdminWa();
+  }, []);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -166,9 +188,8 @@ export default function Auth() {
       const wilayahNama = wilayahData.find(w => w.id === selectedWilayah)?.nama || '-';
       const message = `*Pendaftaran GELIS DELIVERY*%0A%0ANama: ${nama}%0ANo. WhatsApp: ${noWhatsapp}%0ARole: ${roleText[selectedRole]}${selectedRole === 'mitra' ? `%0AWilayah: ${wilayahNama}` : ''}%0AAlamat: ${alamat || '-'}%0A%0AMohon diverifikasi. Terima kasih.`;
       
-      // Admin WhatsApp number
-      const adminWa = '6281234567890';
-      const waLink = `https://wa.me/${adminWa}?text=${message}`;
+      // Admin WhatsApp number from settings
+      const waLink = `https://wa.me/${adminWaNumber}?text=${message}`;
 
       setIsLoading(false);
 
@@ -201,9 +222,8 @@ export default function Auth() {
   };
 
   const handleContactAdmin = () => {
-    const adminWa = '6281234567890';
     const message = `Halo Admin GELIS DELIVERY,%0A%0ASaya ingin mendaftar sebagai Driver.%0A%0ANama: ${nama || '[isi nama Anda]'}%0ANo. WhatsApp: ${noWhatsapp || '[isi nomor Anda]'}%0A%0AMohon informasi lebih lanjut. Terima kasih.`;
-    window.open(`https://wa.me/${adminWa}?text=${message}`, '_blank');
+    window.open(`https://wa.me/${adminWaNumber}?text=${message}`, '_blank');
   };
 
   return (
