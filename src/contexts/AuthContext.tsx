@@ -94,8 +94,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (noWhatsapp: string, password: string) => {
-    // Convert WhatsApp number to email format for Supabase auth
-    const email = `${noWhatsapp.replace(/\D/g, '')}@gelis.app`;
+    // Check if input is a username (contains letters) or phone number (digits only)
+    const isUsername = /[a-zA-Z]/.test(noWhatsapp);
+    const email = isUsername 
+      ? `${noWhatsapp.toLowerCase()}@gelis.app`
+      : `${noWhatsapp.replace(/\D/g, '')}@gelis.app`;
     
     const { error } = await supabase.auth.signInWithPassword({
       email,
