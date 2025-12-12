@@ -67,7 +67,7 @@ export default function AdminDashboard() {
           description: 'Silakan login terlebih dahulu',
           variant: 'destructive',
         });
-        navigate('/auth');
+        navigate('/admin/login');
         return;
       }
       if (role !== 'admin') {
