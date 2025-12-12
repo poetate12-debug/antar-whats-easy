@@ -11,6 +11,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 // Eager load - critical paths
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
+import AdminAuth from "./pages/AdminAuth";
 import NotFound from "./pages/NotFound";
 
 // Lazy load - secondary paths
@@ -52,6 +53,7 @@ const App = () => (
               {/* Critical paths - eager loaded */}
               <Route path="/" element={<Home />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/admin/login" element={<AdminAuth />} />
               
               {/* Secondary paths - lazy loaded */}
               <Route path="/wilayah/:slug" element={<WilayahPage />} />
