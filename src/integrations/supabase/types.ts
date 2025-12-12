@@ -121,6 +121,113 @@ export type Database = {
           },
         ]
       }
+      pending_registrations: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          id: string
+          nama: string
+          no_whatsapp: string
+          processed_at: string | null
+          processed_by: string | null
+          requested_role: Database["public"]["Enums"]["app_role"]
+          status: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          nama: string
+          no_whatsapp: string
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_role: Database["public"]["Enums"]["app_role"]
+          status?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          nama?: string
+          no_whatsapp?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_role?: Database["public"]["Enums"]["app_role"]
+          status?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          alamat: string | null
+          created_at: string
+          foto_url: string | null
+          id: string
+          is_active: boolean
+          is_verified: boolean
+          nama: string
+          no_whatsapp: string
+          updated_at: string
+          user_id: string
+          wilayah_id: string | null
+        }
+        Insert: {
+          alamat?: string | null
+          created_at?: string
+          foto_url?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          nama: string
+          no_whatsapp: string
+          updated_at?: string
+          user_id: string
+          wilayah_id?: string | null
+        }
+        Update: {
+          alamat?: string | null
+          created_at?: string
+          foto_url?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          nama?: string
+          no_whatsapp?: string
+          updated_at?: string
+          user_id?: string
+          wilayah_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_wilayah_id_fkey"
+            columns: ["wilayah_id"]
+            isOneToOne: false
+            referencedRelation: "wilayahs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       warungs: {
         Row: {
           alamat: string
@@ -206,10 +313,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "pelanggan" | "mitra" | "driver" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -336,6 +453,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["pelanggan", "mitra", "driver", "admin"],
+    },
   },
 } as const
