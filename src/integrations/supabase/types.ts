@@ -14,7 +14,193 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      menus: {
+        Row: {
+          created_at: string
+          deskripsi: string | null
+          foto_url: string | null
+          harga: number
+          id: string
+          is_available: boolean
+          kategori: string | null
+          nama: string
+          warung_id: string
+        }
+        Insert: {
+          created_at?: string
+          deskripsi?: string | null
+          foto_url?: string | null
+          harga: number
+          id?: string
+          is_available?: boolean
+          kategori?: string | null
+          nama: string
+          warung_id: string
+        }
+        Update: {
+          created_at?: string
+          deskripsi?: string | null
+          foto_url?: string | null
+          harga?: number
+          id?: string
+          is_available?: boolean
+          kategori?: string | null
+          nama?: string
+          warung_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menus_warung_id_fkey"
+            columns: ["warung_id"]
+            isOneToOne: false
+            referencedRelation: "warungs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          customer_address: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          items: Json
+          ongkir: number
+          status: string
+          subtotal: number
+          total: number
+          warung_id: string
+          wilayah_id: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          customer_address: string
+          customer_name: string
+          customer_phone: string
+          id?: string
+          items: Json
+          ongkir: number
+          status?: string
+          subtotal: number
+          total: number
+          warung_id: string
+          wilayah_id: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          customer_address?: string
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          items?: Json
+          ongkir?: number
+          status?: string
+          subtotal?: number
+          total?: number
+          warung_id?: string
+          wilayah_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_warung_id_fkey"
+            columns: ["warung_id"]
+            isOneToOne: false
+            referencedRelation: "warungs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_wilayah_id_fkey"
+            columns: ["wilayah_id"]
+            isOneToOne: false
+            referencedRelation: "wilayahs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      warungs: {
+        Row: {
+          alamat: string
+          created_at: string
+          deskripsi: string | null
+          foto_url: string | null
+          id: string
+          is_active: boolean
+          jam_buka: string | null
+          nama: string
+          no_wa: string
+          rating: number | null
+          total_reviews: number | null
+          wilayah_id: string
+        }
+        Insert: {
+          alamat: string
+          created_at?: string
+          deskripsi?: string | null
+          foto_url?: string | null
+          id?: string
+          is_active?: boolean
+          jam_buka?: string | null
+          nama: string
+          no_wa: string
+          rating?: number | null
+          total_reviews?: number | null
+          wilayah_id: string
+        }
+        Update: {
+          alamat?: string
+          created_at?: string
+          deskripsi?: string | null
+          foto_url?: string | null
+          id?: string
+          is_active?: boolean
+          jam_buka?: string | null
+          nama?: string
+          no_wa?: string
+          rating?: number | null
+          total_reviews?: number | null
+          wilayah_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "warungs_wilayah_id_fkey"
+            columns: ["wilayah_id"]
+            isOneToOne: false
+            referencedRelation: "wilayahs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wilayahs: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          nama: string
+          ongkir: number
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          nama: string
+          ongkir?: number
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          nama?: string
+          ongkir?: number
+          slug?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
