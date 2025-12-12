@@ -1,7 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { wilayahData } from "@/data/wilayah";
-import { warungData, getWarungByWilayahId } from "@/data/warung";
+import { supabase } from "@/integrations/supabase/client";
 import WarungCard from "@/components/WarungCard";
 import NavHeader from "@/components/NavHeader";
 import Footer from "@/components/Footer";
@@ -9,38 +8,108 @@ import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import PopularMenuSlider from "@/components/PopularMenuSlider";
 import InstallPWAButton from "@/components/InstallPWAButton";
 import { useCart } from "@/hooks/useCart";
-import { Search, MapPin } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface Wilayah {
+  id: string;
+  nama: string;
+  slug: string;
+  ongkir: number;
+}
+
+interface Warung {
+  id: string;
+  nama: string;
+  alamat: string;
+  deskripsi: string | null;
+  foto_url: string | null;
+  rating: number | null;
+  total_reviews: number | null;
+  wilayah_id: string;
+  wilayah?: Wilayah;
+}
 
 const Home = () => {
   const navigate = useNavigate();
   const { totalItems } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedWilayah, setSelectedWilayah] = useState<string | null>(null);
+  const [wilayahs, setWilayahs] = useState<Wilayah[]>([]);
+  const [warungs, setWarungs] = useState<Warung[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const activeWilayah = wilayahData.filter((w) => w.isActive);
+  useEffect(() => {
+    const fetchData = async () => {
+      // Fetch wilayahs
+      const { data: wilayahData } = await supabase
+        .from('wilayahs')
+        .select('id, nama, slug, ongkir')
+        .eq('is_active', true)
+        .order('nama');
+
+      if (wilayahData) {
+        setWilayahs(wilayahData);
+      }
+
+      // Fetch warungs with wilayah info
+      const { data: warungData } = await supabase
+        .from('warungs')
+        .select(`
+          id,
+          nama,
+          alamat,
+          deskripsi,
+          foto_url,
+          rating,
+          total_reviews,
+          wilayah_id,
+          wilayah:wilayahs(id, nama, slug, ongkir)
+        `)
+        .eq('is_active', true)
+        .order('nama');
+
+      if (warungData) {
+        setWarungs(warungData as unknown as Warung[]);
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  // Count warungs per wilayah
+  const warungCountByWilayah = useMemo(() => {
+    const counts: Record<string, number> = {};
+    warungs.forEach((w) => {
+      counts[w.wilayah_id] = (counts[w.wilayah_id] || 0) + 1;
+    });
+    return counts;
+  }, [warungs]);
 
   const filteredWarungs = useMemo(() => {
-    let warungs = warungData.filter((w) => w.isActive);
+    let filtered = warungs;
     
     if (selectedWilayah) {
-      warungs = warungs.filter((w) => w.wilayahId === selectedWilayah);
+      filtered = filtered.filter((w) => w.wilayah_id === selectedWilayah);
     }
     
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      warungs = warungs.filter(
+      filtered = filtered.filter(
         (w) =>
           w.nama.toLowerCase().includes(query) ||
           (w.deskripsi && w.deskripsi.toLowerCase().includes(query))
       );
     }
     
-    return warungs;
-  }, [selectedWilayah, searchQuery]);
+    return filtered;
+  }, [warungs, selectedWilayah, searchQuery]);
 
   const getWilayahName = (wilayahId: string) => {
-    const wilayah = wilayahData.find((w) => w.id === wilayahId);
+    const wilayah = wilayahs.find((w) => w.id === wilayahId);
     return wilayah?.nama || "";
   };
 
@@ -49,7 +118,7 @@ const Home = () => {
       <NavHeader cartCount={totalItems} />
 
       <main className="flex-grow">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-6 sm:py-8">
           {/* Hero Section */}
           <div className="text-center mb-6 animate-fade-up">
             <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2 sm:mb-4">
@@ -88,8 +157,8 @@ const Home = () => {
               >
                 Semua
               </button>
-              {activeWilayah.map((wilayah) => {
-                const warungCount = getWarungByWilayahId(wilayah.id).length;
+              {wilayahs.map((wilayah) => {
+                const warungCount = warungCountByWilayah[wilayah.id] || 0;
                 return (
                   <button
                     key={wilayah.id}
@@ -124,24 +193,41 @@ const Home = () => {
               </span>
             </h2>
 
-            {filteredWarungs.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4">
-                {filteredWarungs.map((warung, index) => {
-                  const wilayah = wilayahData.find((w) => w.id === warung.wilayahId);
-                  return (
-                    <div
-                      key={warung.id}
-                      className="animate-fade-up"
-                      style={{ animationDelay: `${index * 30}ms` }}
-                    >
-                      <WarungCard
-                        warung={warung}
-                        ongkir={wilayah?.ongkir || 0}
-                        onClick={() => navigate(`/warung/${warung.id}`)}
-                      />
-                    </div>
-                  );
-                })}
+            {isLoading ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="aspect-[4/3] rounded-xl" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                ))}
+              </div>
+            ) : filteredWarungs.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4">
+                {filteredWarungs.map((warung, index) => (
+                  <div
+                    key={warung.id}
+                    className="animate-fade-up"
+                    style={{ animationDelay: `${index * 30}ms` }}
+                  >
+                    <WarungCard
+                      warung={{
+                        id: warung.id,
+                        wilayahId: warung.wilayah_id,
+                        nama: warung.nama,
+                        alamat: warung.alamat,
+                        foto: warung.foto_url || undefined,
+                        deskripsi: warung.deskripsi || undefined,
+                        rating: warung.rating || undefined,
+                        noWa: '',
+                        isActive: true,
+                      }}
+                      ongkir={warung.wilayah?.ongkir || 0}
+                      onClick={() => navigate(`/warung/${warung.id}`)}
+                    />
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="text-center py-12 text-muted-foreground">
