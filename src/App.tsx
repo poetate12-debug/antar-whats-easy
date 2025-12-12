@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import OrderTrackingPage from "./pages/OrderTrackingPage";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/wilayah/:slug" element={<WilayahPage />} />
             <Route path="/warung/:id" element={<WarungPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order/:orderId" element={<OrderTrackingPage />} />
             <Route path="/dashboard/pelanggan" element={<CustomerDashboard />} />
             <Route path="/dashboard/driver" element={<DriverDashboard />} />
             <Route path="/dashboard/mitra" element={<MitraDashboard />} />

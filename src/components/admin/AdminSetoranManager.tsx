@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,7 @@ interface DriverSetoran {
   };
 }
 
-export default function AdminSetoranManager() {
+const AdminSetoranManager = forwardRef<HTMLDivElement>((props, ref) => {
   const { toast } = useToast();
   const [setoranList, setSetoranList] = useState<DriverSetoran[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,15 +30,12 @@ export default function AdminSetoranManager() {
   const fetchSetoran = async () => {
     const { data, error } = await supabase
       .from('driver_setoran')
-      .select(`
-        *,
-        profile:profiles!driver_setoran_driver_id_fkey(nama, no_whatsapp)
-      `)
+      .select('*')
       .in('status', ['pending', 'paid'])
       .order('created_at', { ascending: false });
 
     if (!error && data) {
-      // Manually fetch profiles since the foreign key might not work directly
+      // Fetch profiles
       const driverIds = data.map(s => s.driver_id);
       const { data: profiles } = await supabase
         .from('profiles')
@@ -88,7 +85,7 @@ export default function AdminSetoranManager() {
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
+      <div ref={ref} className="space-y-3">
         {[1, 2, 3].map(i => (
           <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />
         ))}
@@ -100,7 +97,7 @@ export default function AdminSetoranManager() {
   const paidSetoran = setoranList.filter(s => s.status === 'paid');
 
   return (
-    <div className="space-y-4">
+    <div ref={ref} className="space-y-4">
       {/* Summary */}
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
@@ -187,4 +184,8 @@ export default function AdminSetoranManager() {
       )}
     </div>
   );
-}
+});
+
+AdminSetoranManager.displayName = 'AdminSetoranManager';
+
+export default AdminSetoranManager;
