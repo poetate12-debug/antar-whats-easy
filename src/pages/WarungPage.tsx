@@ -5,7 +5,7 @@ import MenuItemCard from "@/components/MenuItemCard";
 import CartSidebar from "@/components/CartSidebar";
 import NavHeader from "@/components/NavHeader";
 import Breadcrumb from "@/components/Breadcrumb";
-import Footer from "@/components/Footer";
+import BottomNavigation from "@/components/BottomNavigation";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { useCart } from "@/hooks/useCart";
 import { Clock, MapPin, Truck, Star } from "lucide-react";
@@ -161,7 +161,7 @@ const WarungPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col pb-16">
         <NavHeader showBack backTo="/" cartCount={totalItems} />
         <main className="flex-grow container mx-auto px-4 py-8">
           <Skeleton className="h-64 rounded-2xl mb-8" />
@@ -172,14 +172,14 @@ const WarungPage = () => {
             ))}
           </div>
         </main>
-        <Footer />
+        <BottomNavigation />
       </div>
     );
   }
 
   if (!warung) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col pb-16">
         <NavHeader showBack backTo="/" cartCount={totalItems} />
         <main className="flex-grow flex items-center justify-center">
           <div className="text-center">
@@ -191,13 +191,13 @@ const WarungPage = () => {
             </p>
           </div>
         </main>
-        <Footer />
+        <BottomNavigation />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-16">
       <NavHeader
         showBack
         backTo={`/wilayah/${warung.wilayah.slug}`}
@@ -366,7 +366,7 @@ const WarungPage = () => {
         </div>
       )}
 
-      <Footer />
+      <BottomNavigation />
       <FloatingWhatsApp />
     </div>
   );

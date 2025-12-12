@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { Download, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePWA } from "@/hooks/usePWA";
 import { useToast } from "@/hooks/use-toast";
@@ -17,11 +17,21 @@ const InstallPWAButton = () => {
     }
 
     if (!canInstall) {
-      toast({
-        title: "Tidak Dapat Diinstal",
-        description: "Buka di browser dan coba lagi",
-        variant: "destructive",
-      });
+      // Provide helpful instructions based on browser/device
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      
+      if (isIOS || isSafari) {
+        toast({
+          title: "Cara Install di Safari",
+          description: "Tap tombol Share (kotak dengan panah) lalu pilih 'Add to Home Screen'",
+        });
+      } else {
+        toast({
+          title: "Tips Install",
+          description: "Buka di browser Chrome atau Safari untuk menginstal aplikasi",
+        });
+      }
       return;
     }
 
@@ -39,12 +49,12 @@ const InstallPWAButton = () => {
   return (
     <Button
       variant="outline"
-      className="rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground h-10 px-4 text-sm gap-2"
+      className="rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground h-10 px-3 sm:px-4 text-xs sm:text-sm gap-1.5 sm:gap-2 whitespace-nowrap"
       onClick={handleInstall}
       title="Install Aplikasi"
     >
-      <Download className="w-4 h-4" />
-      <span className="hidden sm:inline">Install</span>
+      <Smartphone className="w-4 h-4 flex-shrink-0" />
+      <span>Install</span>
     </Button>
   );
 };
