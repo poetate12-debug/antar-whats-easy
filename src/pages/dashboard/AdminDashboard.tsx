@@ -155,66 +155,37 @@ export default function AdminDashboard() {
 
   const handleApproveRegistration = async (reg: PendingRegistration, warungId?: string) => {
     try {
-      // Create user in auth
       const email = `${reg.no_whatsapp}@gelis.app`;
       const tempPassword = `Gelis${reg.no_whatsapp.slice(-4)}!`;
 
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email,
-        password: tempPassword,
-        email_confirm: true,
+      // Call edge function to create user (requires service role)
+      const { data, error } = await supabase.functions.invoke('create-user', {
+        body: {
+          email,
+          password: tempPassword,
+          nama: reg.nama,
+          noWhatsapp: reg.no_whatsapp,
+          role: reg.requested_role,
+          warungId: warungId || null,
+          registrationId: reg.id,
+        },
       });
 
-      if (authError) throw authError;
-
-      // Create profile
-      await supabase.from('profiles').insert([{
-        user_id: authData.user.id,
-        nama: reg.nama,
-        no_whatsapp: reg.no_whatsapp,
-        is_verified: true,
-        is_active: true,
-      }]);
-
-      // Create role
-      await supabase.from('user_roles').insert([{
-        user_id: authData.user.id,
-        role: reg.requested_role as 'pelanggan' | 'mitra' | 'driver' | 'admin',
-      }]);
-
-      // Create driver stats if driver
-      if (reg.requested_role === 'driver') {
-        await supabase.from('driver_stats').insert([{
-          driver_id: authData.user.id,
-        }]);
-      }
-
-      // Assign warung to mitra if selected
-      if (reg.requested_role === 'mitra' && warungId) {
-        await supabase
-          .from('warungs')
-          .update({ owner_id: authData.user.id })
-          .eq('id', warungId);
-      }
-
-      // Update registration status
-      await supabase
-        .from('pending_registrations')
-        .update({ status: 'approved', processed_at: new Date().toISOString() })
-        .eq('id', reg.id);
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || 'Failed to create user');
 
       toast({
         title: 'Berhasil',
-        description: `Akun ${reg.nama} telah disetujui${warungId ? ' dan dihubungkan ke warung' : ''}`,
+        description: `Akun ${reg.nama} telah disetujui${warungId ? ' dan dihubungkan ke warung' : ''}. Password: ${tempPassword}`,
       });
 
       setApprovingMitra(null);
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error approving registration:', error);
       toast({
         title: 'Error',
-        description: 'Gagal menyetujui pendaftaran',
+        description: error.message || 'Gagal menyetujui pendaftaran',
         variant: 'destructive',
       });
     }
