@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Cart, CartItem, Menu, Warung, Wilayah } from "@/types";
 
-const CART_STORAGE_KEY = "antarrasa_cart";
+const CART_STORAGE_KEY = "gelis_cart";
 
 export const useCart = () => {
   const [cart, setCart] = useState<Cart | null>(null);

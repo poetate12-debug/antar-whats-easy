@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import { 
   LogOut, Users, Store, MapPin, Package, 
-  CheckCircle, XCircle, Shield, Wallet, Truck, BarChart3
+  CheckCircle, XCircle, Shield, Wallet, Truck, BarChart3, Settings
 } from 'lucide-react';
 import NavHeader from '@/components/NavHeader';
 import Footer from '@/components/Footer';
@@ -20,6 +20,7 @@ import AdminWilayahPanel from '@/components/admin/AdminWilayahPanel';
 import AdminMitraPanel from '@/components/admin/AdminMitraPanel';
 import AdminDriverPanel from '@/components/admin/AdminDriverPanel';
 import AdminReportPanel from '@/components/admin/AdminReportPanel';
+import AdminSettingsPanel from '@/components/admin/AdminSettingsPanel';
 
 interface PendingRegistration {
   id: string;
@@ -286,7 +287,7 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="registrations" className="mb-4">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 h-auto gap-1">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-auto gap-1">
             <TabsTrigger value="registrations" className="text-xs gap-1 py-2">
               <Users className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Daftar</span>
@@ -319,6 +320,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="laporan" className="text-xs gap-1 py-2">
               <BarChart3 className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Laporan</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs gap-1 py-2">
+              <Settings className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Setting</span>
             </TabsTrigger>
           </TabsList>
 
@@ -382,6 +387,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="laporan" className="mt-4">
             <AdminReportPanel />
+          </TabsContent>
+
+          <TabsContent value="settings" className="mt-4">
+            <AdminSettingsPanel />
           </TabsContent>
         </Tabs>
 
