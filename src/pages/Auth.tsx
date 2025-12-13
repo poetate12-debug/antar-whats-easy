@@ -24,7 +24,7 @@ export default function Auth() {
   const [mode, setMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(false);
   const [loginRole, setLoginRole] = useState<RoleType>('pelanggan');
-  const [adminWaNumber, setAdminWaNumber] = useState('6281234567890');
+  const [adminWaNumber, setAdminWaNumber] = useState<string | null>(null);
   
   // Form state
   const [nama, setNama] = useState('');
@@ -195,8 +195,33 @@ export default function Auth() {
       const wilayahNama = wilayahData.find(w => w.id === selectedWilayah)?.nama || '-';
       const message = `*Pendaftaran GELIS DELIVERY*%0A%0ANama: ${nama}%0ANo. WhatsApp: ${noWhatsapp}%0ARole: ${roleText[selectedRole]}${selectedRole === 'mitra' ? `%0AWilayah: ${wilayahNama}` : ''}%0AAlamat: ${alamat || '-'}%0A%0AMohon diverifikasi. Terima kasih.`;
       
-      // Admin WhatsApp number from settings
-      const waLink = `https://wa.me/${adminWaNumber}?text=${message}`;
+      // Fetch admin WA fresh to ensure latest value
+      let waNumber = adminWaNumber;
+      if (!waNumber) {
+        const { data: waData } = await supabase
+          .from('app_settings')
+          .select('value')
+          .eq('key', 'admin_whatsapp')
+          .maybeSingle();
+        if (waData?.value) {
+          waNumber = waData.value.replace(/\D/g, '');
+          if (waNumber.startsWith('0')) {
+            waNumber = '62' + waNumber.slice(1);
+          }
+        }
+      }
+      
+      if (!waNumber) {
+        toast({
+          title: 'Error',
+          description: 'Gagal mendapatkan nomor admin, silakan coba lagi',
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+        return;
+      }
+      
+      const waLink = `https://wa.me/${waNumber}?text=${message}`;
 
       setIsLoading(false);
 
@@ -228,9 +253,31 @@ export default function Auth() {
     }
   };
 
-  const handleContactAdmin = () => {
+  const handleContactAdmin = async () => {
+    let waNumber = adminWaNumber;
+    if (!waNumber) {
+      const { data: waData } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'admin_whatsapp')
+        .maybeSingle();
+      if (waData?.value) {
+        waNumber = waData.value.replace(/\D/g, '');
+        if (waNumber.startsWith('0')) {
+          waNumber = '62' + waNumber.slice(1);
+        }
+      }
+    }
+    if (!waNumber) {
+      toast({
+        title: 'Error',
+        description: 'Gagal mendapatkan nomor admin',
+        variant: 'destructive',
+      });
+      return;
+    }
     const message = `Halo Admin GELIS DELIVERY,%0A%0ASaya ingin mendaftar sebagai Driver.%0A%0ANama: ${nama || '[isi nama Anda]'}%0ANo. WhatsApp: ${noWhatsapp || '[isi nomor Anda]'}%0A%0AMohon informasi lebih lanjut. Terima kasih.`;
-    window.open(`https://wa.me/${adminWaNumber}?text=${message}`, '_blank');
+    window.open(`https://wa.me/${waNumber}?text=${message}`, '_blank');
   };
 
   return (
