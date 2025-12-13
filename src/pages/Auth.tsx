@@ -162,7 +162,46 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      // Save to pending_registrations
+      // For pelanggan: create account directly via edge function
+      if (selectedRole === 'pelanggan') {
+        const { data, error } = await supabase.functions.invoke('register-customer', {
+          body: {
+            nama: nama.trim(),
+            noWhatsapp: noWhatsapp.replace(/\D/g, ''),
+            password,
+            alamat: alamat || null,
+            role: 'pelanggan',
+          },
+        });
+
+        if (error || !data?.success) {
+          toast({
+            title: 'Error',
+            description: data?.error || error?.message || 'Gagal mendaftar',
+            variant: 'destructive',
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        setIsLoading(false);
+
+        toast({
+          title: 'Pendaftaran Berhasil!',
+          description: 'Akun Anda sudah aktif, silakan login dengan password yang sudah Anda buat.',
+        });
+
+        // Reset form and switch to login
+        setNama('');
+        setPassword('');
+        setConfirmPassword('');
+        setAlamat('');
+        setSelectedWilayah('');
+        setMode('login');
+        return;
+      }
+
+      // For mitra: still need admin approval, save to pending_registrations
       const { error: regError } = await supabase
         .from('pending_registrations')
         .insert({
@@ -185,15 +224,9 @@ export default function Auth() {
         return;
       }
 
-      // Generate WhatsApp message
-      const roleText = {
-        pelanggan: 'Pelanggan',
-        driver: 'Driver',
-        mitra: 'Mitra/Pemilik Warung',
-      };
-
+      // Generate WhatsApp message for mitra
       const wilayahNama = wilayahData.find(w => w.id === selectedWilayah)?.nama || '-';
-      const message = `*Pendaftaran GELIS DELIVERY*%0A%0ANama: ${nama}%0ANo. WhatsApp: ${noWhatsapp}%0ARole: ${roleText[selectedRole]}${selectedRole === 'mitra' ? `%0AWilayah: ${wilayahNama}` : ''}%0AAlamat: ${alamat || '-'}%0A%0AMohon diverifikasi. Terima kasih.`;
+      const message = `*Pendaftaran GELIS DELIVERY*%0A%0ANama: ${nama}%0ANo. WhatsApp: ${noWhatsapp}%0ARole: Mitra/Pemilik Warung%0AWilayah: ${wilayahNama}%0AAlamat: ${alamat || '-'}%0A%0AMohon diverifikasi. Terima kasih.`;
       
       // Fetch admin WA fresh to ensure latest value
       let waNumber = adminWaNumber;
