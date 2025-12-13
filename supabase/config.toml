@@ -1,5 +1,8 @@
 project_id = "eozdslszmuiamycpsepe"
 
+[functions.register-customer]
+verify_jwt = false
+
 [functions.process-order]
 verify_jwt = false
 
