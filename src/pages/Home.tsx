@@ -180,7 +180,7 @@ const Home = () => {
           </div>
 
           {/* Popular Menu Slider */}
-          <PopularMenuSlider />
+          <PopularMenuSlider selectedWilayah={selectedWilayah} />
 
           {/* Warung List */}
           <div>
