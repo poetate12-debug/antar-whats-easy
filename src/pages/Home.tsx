@@ -8,7 +8,7 @@ import BottomNavigation from "@/components/BottomNavigation";
 import PopularMenuSlider from "@/components/PopularMenuSlider";
 import InstallPWAButton from "@/components/InstallPWAButton";
 import { useCart } from "@/hooks/useCart";
-import { Search } from "lucide-react";
+import { Search, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -144,38 +144,64 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Wilayah Pills */}
-          <div className="mb-4 sm:mb-6">
-            <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
-              <button
-                onClick={() => setSelectedWilayah(null)}
-                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 ${
-                  selectedWilayah === null
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
-              >
-                Semua
-              </button>
-              {wilayahs.map((wilayah) => {
-                const warungCount = warungCountByWilayah[wilayah.id] || 0;
-                return (
-                  <button
-                    key={wilayah.id}
-                    onClick={() => setSelectedWilayah(wilayah.id)}
-                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 ${
-                      selectedWilayah === wilayah.id
-                        ? "bg-primary text-primary-foreground shadow-md"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
-                    }`}
-                  >
-                    {wilayah.nama}
-                    <span className="bg-background/20 px-1.5 py-0.5 rounded-full text-[10px]">
-                      {warungCount}
-                    </span>
-                  </button>
-                );
-              })}
+          {/* Wilayah Filter */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <MapPin className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">Pilih Wilayah</span>
+            </div>
+            <div className="relative">
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4">
+                {/* All button */}
+                <button
+                  onClick={() => setSelectedWilayah(null)}
+                  className={`flex-shrink-0 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2 border ${
+                    selectedWilayah === null
+                      ? "bg-primary text-primary-foreground border-primary shadow-button"
+                      : "bg-card text-foreground border-border hover:border-primary/50 hover:bg-primary/5"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-current opacity-60" />
+                  Semua
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                    selectedWilayah === null 
+                      ? "bg-primary-foreground/20 text-primary-foreground" 
+                      : "bg-muted text-muted-foreground"
+                  }`}>
+                    {warungs.length}
+                  </span>
+                </button>
+                
+                {/* Wilayah buttons */}
+                {wilayahs.map((wilayah) => {
+                  const warungCount = warungCountByWilayah[wilayah.id] || 0;
+                  const isSelected = selectedWilayah === wilayah.id;
+                  return (
+                    <button
+                      key={wilayah.id}
+                      onClick={() => setSelectedWilayah(wilayah.id)}
+                      className={`flex-shrink-0 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2 border ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground border-primary shadow-button"
+                          : "bg-card text-foreground border-border hover:border-primary/50 hover:bg-primary/5"
+                      }`}
+                    >
+                      {wilayah.nama}
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center ${
+                        isSelected 
+                          ? "bg-primary-foreground/20 text-primary-foreground" 
+                          : "bg-muted text-muted-foreground"
+                      }`}>
+                        {warungCount}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {/* Gradient fade indicators */}
+              <div className="absolute left-0 top-0 bottom-2 w-8 bg-gradient-to-r from-background to-transparent pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
             </div>
           </div>
 
