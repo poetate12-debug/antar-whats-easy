@@ -2,7 +2,7 @@ import { useState } from "react";
 import HeroSection from "@/components/HeroSection";
 import MenuSection from "@/components/MenuSection";
 import Footer from "@/components/Footer";
-import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+
 import { MenuItem } from "@/data/menu";
 import { toast } from "@/hooks/use-toast";
 
@@ -41,7 +41,7 @@ const Index = () => {
       <HeroSection />
       <MenuSection onOrderItem={handleOrderItem} />
       <Footer />
-      <FloatingWhatsApp cartMessage={cartMessage} />
+      
     </main>
   );
 };
