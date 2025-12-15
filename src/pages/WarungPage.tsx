@@ -6,7 +6,7 @@ import CartSidebar from "@/components/CartSidebar";
 import NavHeader from "@/components/NavHeader";
 import Breadcrumb from "@/components/Breadcrumb";
 import BottomNavigation from "@/components/BottomNavigation";
-import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+
 import { useCart } from "@/hooks/useCart";
 import { Clock, MapPin, Truck, Star } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -367,7 +367,7 @@ const WarungPage = () => {
       )}
 
       <BottomNavigation />
-      <FloatingWhatsApp />
+      
     </div>
   );
 };

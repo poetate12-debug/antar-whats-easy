@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import WarungCard from "@/components/WarungCard";
 import NavHeader from "@/components/NavHeader";
 import BottomNavigation from "@/components/BottomNavigation";
-import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+
 import PopularMenuSlider from "@/components/PopularMenuSlider";
 import InstallPWAButton from "@/components/InstallPWAButton";
 import { useCart } from "@/hooks/useCart";
@@ -239,7 +239,7 @@ const Home = () => {
         </div>
       </main>
 
-      <FloatingWhatsApp />
+      
       <BottomNavigation />
     </div>
   );

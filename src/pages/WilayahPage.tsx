@@ -6,7 +6,7 @@ import WarungCard from "@/components/WarungCard";
 import NavHeader from "@/components/NavHeader";
 import Breadcrumb from "@/components/Breadcrumb";
 import Footer from "@/components/Footer";
-import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+
 import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/lib/whatsapp";
 
@@ -98,7 +98,7 @@ const WilayahPage = () => {
       </main>
 
       <Footer />
-      <FloatingWhatsApp />
+      
     </div>
   );
 };
